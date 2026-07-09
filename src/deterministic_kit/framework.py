@@ -17,18 +17,6 @@ class FrameworkDetection:
     package_name: str | None = None
 
 
-def detect_framework(project_path: Path) -> FrameworkDetection:
-    """Detect primary frontend framework + routing style from project files."""
-    detected = detect_all_frameworks(project_path)
-    if not detected:
-        return FrameworkDetection(
-            framework="unknown",
-            routing_style="unknown",
-            confidence="low",
-            signals=["no known router framework detected"],
-        )
-    return max(detected, key=_rank)
-
 
 def detect_all_frameworks(project_path: Path) -> list[FrameworkDetection]:
     """Detect frameworks across a repo, including monorepo subpackages."""
@@ -182,24 +170,6 @@ def _detect_from_package(package_json: Path, scan_root: Path) -> FrameworkDetect
 
 def _has_routing_dir(project_root: Path, name: str) -> bool:
     return (project_root / name).is_dir() or (project_root / "src" / name).is_dir()
-
-
-def _rank(detection: FrameworkDetection | None) -> int:
-    if detection is None or detection.framework == "unknown":
-        return 0
-    confidence_score = {"high": 3, "medium": 2, "low": 1}.get(detection.confidence, 0)
-    framework_score = {
-        "expo-router": 7,
-        "next": 6,
-        "angular": 6,
-        "vue-router": 5,
-        "sveltekit": 5,
-        "remix": 5,
-        "tanstack-router": 5,
-        "react-router": 4,
-        "vite-react": 2,
-    }.get(detection.framework, 0)
-    return framework_score + confidence_score
 
 
 def format_projects(detections: list[FrameworkDetection]) -> str:
