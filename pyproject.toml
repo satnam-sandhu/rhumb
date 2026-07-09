@@ -1,0 +1,15 @@
+[project]
+name = "deterministic-kit"
+version = "0.1.0"
+description = "Deterministic user journey mapping and PostHog instrumentation detection"
+requires-python = ">=3.11"
+dependencies = [
+    "graphifyy>=0.9.11",
+]
+
+[project.scripts]
+deterministic-kit = "deterministic_kit.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.10.9,<0.11.0"]
+build-backend = "uv_build"

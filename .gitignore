@@ -1,0 +1,21 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+dist/
+build/
+
+# Graphify output from graphify update on this repo
+/graphify-out/
+
+.idea/
+.vscode/
+.DS_Store
+
+# Common input project artifacts (when analyzing external folders)
+node_modules/
+.angular/
