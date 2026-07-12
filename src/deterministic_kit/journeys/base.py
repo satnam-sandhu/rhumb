@@ -1,0 +1,29 @@
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Protocol, runtime_checkable
+
+from deterministic_kit.framework import FrameworkDetection
+from deterministic_kit.graphify_runner import AstResult
+from deterministic_kit.journeys.types import JourneyGraph
+
+
+@runtime_checkable
+class JourneyExtractor(Protocol):
+    """Per-framework journey plugin.
+
+    Implement one module per framework (react_router, vue_router, sveltekit, …).
+    Shared JS/TS hybrid parsing lives in ``parse_js`` — plugins call it, not own it.
+    File-based frameworks add a filesystem pass; Vue/Svelte add SFC parsers later.
+    """
+
+    framework: str
+
+    def extract(
+        self,
+        project_dir: Path,
+        detection: FrameworkDetection,
+        ast_result: AstResult | None = None,
+    ) -> JourneyGraph:
+        """Build a journey graph for one detected project package."""
+        ...

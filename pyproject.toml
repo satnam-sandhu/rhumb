@@ -5,6 +5,14 @@ description = "Deterministic user journey mapping and PostHog instrumentation de
 requires-python = ">=3.11"
 dependencies = [
     "graphifyy>=0.9.11",
+    "tree-sitter>=0.23.0",
+    "tree-sitter-javascript>=0.23.0",
+    "tree-sitter-typescript>=0.23.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
 ]
 
 [project.scripts]
