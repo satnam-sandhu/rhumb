@@ -12,6 +12,7 @@ from deterministic_kit.journeys.react_router import (
 )
 from deterministic_kit.journeys.registry import EXTRACTORS, get_extractor
 from deterministic_kit.journeys.paths import build_journeys, format_journey
+from deterministic_kit.journeys.tanstack_router import TanStackRouterExtractor
 from deterministic_kit.journeys.types import (
     Confidence,
     JourneyGap,
@@ -36,6 +37,7 @@ __all__ = [
     "RouteCandidate",
     "RouteNode",
     "RouteSource",
+    "TanStackRouterExtractor",
     "build_journeys",
     "extract_navigation",
     "extract_nav_from_parse",

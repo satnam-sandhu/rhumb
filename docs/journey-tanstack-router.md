@@ -1,6 +1,6 @@
 # Journey Detection: TanStack Router
 
-**Status:** planned (doc only — plugin not started)  
+**Status:** live (Phase 1–3) — `TanStackRouterExtractor` in `journeys/tanstack_router.py`  
 **Framework id:** `tanstack-router` (detected via `dependency: @tanstack/react-router`; signals: `src/routes/`, `src/routeTree.gen.ts`)  
 **Shared shell:** [`journey-architecture.md`](./journey-architecture.md) — registry, `JourneyGraph`, hybrid `parse_js`, path enumeration  
 **Related:** [`journey-expo-router.md`](./journey-expo-router.md) (filesystem peer); [`journey-react-router.md`](./journey-react-router.md) (code-based sibling)
@@ -11,7 +11,7 @@ This doc is **TanStack Router only**. Cross-framework rules live in the architec
 
 Deterministic **route + navigation** graphs from a TanStack Router app — no runtime, no LLM in the extract path.
 
-Output: `JourneyGraph` via a future `TanStackRouterExtractor` (same contract as every other plugin).
+Output: `JourneyGraph` via `TanStackRouterExtractor` (same contract as every other plugin).
 
 TanStack Router is **hybrid**:
 
@@ -134,56 +134,56 @@ Search params (`search:`) — ignore for journey path identity (URL path only), 
                          └──────────────────────┘
 ```
 
-## Module layout (planned)
+## Module layout
 
 ```
 src/deterministic_kit/journeys/
-  tanstack_router.py       # TanStackRouterExtractor (new)
+  tanstack_router.py       # TanStackRouterExtractor (live)
   registry.py              # "tanstack-router" → TanStackRouterExtractor()
   parse_js.py              # shared
   paths.py                 # shared
 ```
 
-Unregistered today → CLI prints `not registered`.
+Registered: `"tanstack-router" → TanStackRouterExtractor()` in `registry.py`.
 
 ## Implementation phases
 
 ### Phase 0 — Spike
 
-- [ ] Confirm detection on a sample (`@tanstack/react-router` + `src/routes`)
-- [ ] Inspect one real `routeTree.gen.ts` shape (exports, path strings)
-- [ ] Manual map: FS tree + gen paths → expected `RouteNode[]`
-- [ ] Decide gen-vs-FS conflict policy (prefer gen)
+- [x] Confirm detection on a sample (`@tanstack/react-router` + `src/routes`)
+- [x] Inspect one real `routeTree.gen.ts` shape (exports, path strings)
+- [x] Manual map: FS tree + gen paths → expected `RouteNode[]`
+- [x] Decide gen-vs-FS conflict policy (prefer gen)
 
 ### Phase 1 — Routes
 
-- [ ] Locate `routeTree.gen.ts` (default + common alternate paths)
-- [ ] Parse gen file for path list (`RouteSource.GENERATED`)
-- [ ] Fallback: walk `src/routes/`; read `createFileRoute('...')` path args
-- [ ] Skip `-` private files, treat `__root` as layout-only
-- [ ] `$param` / splat → medium confidence; static → high
-- [ ] Unit tests: flat + directory + dynamic + pathless layout
+- [x] Locate `routeTree.gen.ts` (default + common alternate paths)
+- [x] Parse gen file for path list (`RouteSource.GENERATED`)
+- [x] Fallback: walk `src/routes/`; read `createFileRoute('...')` path args
+- [x] Skip `-` private files, treat `__root` as layout-only
+- [x] `$param` / splat → medium confidence; static → high
+- [x] Unit tests: flat + directory + dynamic + pathless layout
 
 ### Phase 2 — Navigation
 
-- [ ] `Link to` / `Navigate to` via `parse_js`
-- [ ] `navigate({ to })` / `router.navigate({ to })`
-- [ ] `redirect({ to })`
-- [ ] File → route attach; shared chrome → entry policy (reuse `paths.py`)
+- [x] `Link to` / `Navigate to` via `parse_js`
+- [x] `navigate({ to })` / `router.navigate({ to })`
+- [x] `redirect({ to })`
+- [x] File → route attach; shared chrome → entry policy (reuse `paths.py`)
 
 ### Phase 3 — Robustness
 
-- [ ] Code-based-only apps (`createRoute` tree, no gen file)
-- [ ] Soft-match template `` `/posts/${id}` `` → `/posts/$postId`
-- [ ] Read `tsr.config.json` / vite plugin options for custom dirs
-- [ ] Virtual file routes (if present) — gap or deferred
-- [ ] Optional TS miss-path for re-exported `to` constants
+- [x] Code-based-only apps (`createRoute` tree, no gen file)
+- [x] Soft-match template `` `/posts/${id}` `` → `/posts/$postId`
+- [x] Read `tsr.config.json` / vite plugin options for custom dirs
+- [x] Virtual file routes — JSON `virtualRouteConfig`, `routes.ts` builders, in-tree `__virtual.ts`
+- [x] Optional TS miss-path for re-exported `to` constants (`HOME`, `PATHS.about`, `navigate({ to: PATHS.x })`)
 
 ## Open questions
 
-1. **Gen file missing in CI checkouts** — many repos gitignore `routeTree.gen.ts`. Must FS + `createFileRoute` work alone (yes — Phase 1 fallback).
-2. **Pathless layout URL** — confirm which layout files contribute zero URL segments vs named layouts.
-3. **`$param` vs concrete** — journeys keep parametric URLs (`/posts/$postId`); do not invent sample ids.
+1. **Gen file missing in CI checkouts** — many repos gitignore `routeTree.gen.ts`. Must FS + `createFileRoute` work alone (**yes** — Phase 1 fallback).
+2. **Pathless layout URL** — `_` prefix segments contribute zero URL segments; pathless-only files are layout-only (not leaf routes).
+3. **`$param` vs concrete** — journeys keep parametric URLs (`/posts/$postId`); do not invent sample ids. **`meta.dynamic_form=tanstack`**.
 4. **Sample app** — official TanStack Router Vite file-routing example as golden fixture.
 
 ## References
