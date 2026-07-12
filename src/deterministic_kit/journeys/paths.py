@@ -37,7 +37,10 @@ def build_journeys(
 
 def _default_start(routes: tuple[RouteNode, ...]) -> str:
     for route in routes:
-        if route.url_path == "/" or route.is_index:
+        if route.url_path == "/":
+            return route.url_path
+    for route in routes:
+        if route.is_index and not route.is_wildcard:
             return route.url_path
     for route in routes:
         if not route.is_wildcard:

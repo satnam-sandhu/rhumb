@@ -1,7 +1,7 @@
 # Journey Detection: Expo Router
 
-**Status:** planned (doc only — plugin not started)  
-**Framework id:** `expo-router` (already detected via `dependency: expo-router`)  
+**Status:** live (Phase 1–3) — `ExpoRouterExtractor` in `journeys/expo_router.py`  
+**Framework id:** `expo-router` (detected via `dependency: expo-router`)  
 **Shared shell:** [`journey-architecture.md`](./journey-architecture.md) — registry, `JourneyGraph`, hybrid `parse_js`, path enumeration  
 **Related:** [`journey-react-router.md`](./journey-react-router.md) (config/JSX sibling); filesystem peers: Next, SvelteKit, Remix
 
@@ -11,7 +11,7 @@ This doc is **Expo Router only**. Cross-framework rules live in the architecture
 
 Deterministic **route + navigation** graphs from an Expo Router app source tree — no runtime, no LLM in the extract path.
 
-Output: `JourneyGraph` via a future `ExpoRouterExtractor` (same contract as every other plugin).
+Output: `JourneyGraph` via `ExpoRouterExtractor` (same contract as every other plugin).
 
 Expo Router is **filesystem-first**: the `app/` (or `src/app/`) directory *is* the route table. AST/`parse_js` supplements **navigation** (`Link`, `router.push`, redirects), not primary route discovery.
 
@@ -85,6 +85,10 @@ Dynamic `href={expr}` / `push({ pathname: var })` → `JourneyGap` (low confiden
 
 Relative hrefs (`./`, `../`) — resolve against source file’s route URL when possible; else gap.
 
+**Group-qualified hrefs:** Expo allows `/(auth)/sign-in` and `/(tabs)`. Canonicalize by stripping `(group)` segments so targets match FS `url_path` (`/sign-in`, `/`). Group-only `/(tabs)` → `/`.
+
+**Template hrefs:** `` `/group/${id}` `` soft-matched to FS dynamic routes (`/group/[id]`) at medium confidence; query-only dynamics (`/add-expense?x=${id}`) keep the static path.
+
 ## What Graphify gives / does not
 
 **Useful:**
@@ -116,55 +120,55 @@ Relative hrefs (`./`, `../`) — resolve against source file’s route URL when 
 
 Shared `build_journeys()` (already in shell) turns edges into `/a → /b → …` after extract.
 
-## Module layout (planned)
+## Module layout
 
 ```
 src/deterministic_kit/journeys/
-  expo_router.py           # ExpoRouterExtractor (new)
+  expo_router.py           # ExpoRouterExtractor (live)
   registry.py              # "expo-router" → ExpoRouterExtractor()
   parse_js.py              # nav only (shared)
   paths.py                 # journey sequences (shared)
 ```
 
-Stub today: unregistered → CLI prints `not registered`. Add one registry line when plugin lands.
+Registered: `"expo-router" → ExpoRouterExtractor()` in `registry.py`.
 
 ## Implementation phases
 
 ### Phase 0 — Spike
 
-- [ ] Confirm detection (`expo-router` in `framework.py`) on a sample app
-- [ ] Locate `app/` vs `src/app/`
-- [ ] Manual map of one sample tree → expected `RouteNode[]`
-- [ ] Confirm Graphify does not encode Expo URL conventions
+- [x] Confirm detection (`expo-router` in `framework.py`) on a sample app
+- [x] Locate `app/` vs `src/app/`
+- [x] Manual map of one sample tree → expected `RouteNode[]`
+- [x] Confirm Graphify does not encode Expo URL conventions
 
 ### Phase 1 — Filesystem routes
 
-- [ ] Resolve routes dir (`app/` / `src/app/`)
-- [ ] Walk files; apply notation → `url_path`
-- [ ] Skip `_layout`, `+html`, non-route files
-- [ ] Set `layout` from nearest `_layout.tsx`
-- [ ] `RouteSource.FILESYSTEM`, confidence high for static; medium for dynamic `[param]`
-- [ ] Unit tests on fixture trees (groups, index, dynamic, not-found)
+- [x] Resolve routes dir (`app/` / `src/app/`)
+- [x] Walk files; apply notation → `url_path`
+- [x] Skip `_layout`, `+html`, non-route files
+- [x] Set `layout` from nearest `_layout.tsx`
+- [x] `RouteSource.FILESYSTEM`, confidence high for static; medium for dynamic `[param]`
+- [x] Unit tests on fixture trees (groups, index, dynamic, not-found)
 
 ### Phase 2 — Navigation
 
-- [ ] `Link href` / object `pathname` via `parse_js`
-- [ ] `router.push` / `replace` / `navigate` string args
-- [ ] `Redirect href`
-- [ ] File → route attach; shared chrome → entry/`(shared)` policy (reuse RR path builder)
+- [x] `Link href` / object `pathname` via `parse_js`
+- [x] `router.push` / `replace` / `navigate` string args
+- [x] `Redirect href`
+- [x] File → route attach; shared chrome → entry/`(shared)` policy (reuse RR path builder)
 
 ### Phase 3 — Robustness
 
-- [ ] Typed routes / generated types (if present) as optional cross-check
-- [ ] Relative href resolution
-- [ ] Nested groups + multiple layout roots
-- [ ] Deep-link only routes / `+native-intent` gaps
-- [ ] Optional TS miss-path when hrefs are re-exported constants
+- [x] Typed routes / generated types (if present) as optional cross-check
+- [x] Relative href resolution
+- [x] Nested groups + multiple layout roots
+- [x] Deep-link only routes / `+native-intent` gaps
+- [x] Optional TS miss-path when hrefs are re-exported constants
 
 ## Open questions
 
-1. **Canonical dynamic form** — store `/users/[id]` (Expo) or `/users/:id` (RR-like)? Prefer Expo form for this plugin; document in `meta`.
-2. **Duplicate index URLs** — `(tabs)/index.tsx` and root `index.tsx` both claim `/` — gap or pick by Expo resolution rules?
+1. **Canonical dynamic form** — **decided:** store `/users/[id]` (Expo). `meta.dynamic_form=expo`.
+2. **Duplicate index URLs** — **decided:** keep first file (lexicographic walk); emit `JourneyGap` for later conflicts.
 3. **Tabs vs stack** — are tab switches journeys, or only stack pushes? Default: any static `href`/`push` counts as an edge.
 4. **Sample app** — pick an official Expo template or an internal demo with `expo-router` for golden fixtures.
 

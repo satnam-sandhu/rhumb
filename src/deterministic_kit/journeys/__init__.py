@@ -1,4 +1,5 @@
 from deterministic_kit.journeys.base import JourneyExtractor
+from deterministic_kit.journeys.expo_router import ExpoRouterExtractor
 from deterministic_kit.journeys.parse_js import JsParseResult, follow_export, parse_js_ts
 from deterministic_kit.journeys.react_router import (
     ReactRouterExtractor,
@@ -24,6 +25,7 @@ from deterministic_kit.journeys.types import (
 __all__ = [
     "EXTRACTORS",
     "Confidence",
+    "ExpoRouterExtractor",
     "JourneyExtractor",
     "JourneyGap",
     "JourneyGraph",

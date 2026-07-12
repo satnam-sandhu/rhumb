@@ -4,7 +4,8 @@
 **Scope:** shared shell for all frameworks — plugins plug in; parsers stay layered.
 
 React Router details: [`journey-react-router.md`](./journey-react-router.md)  
-Expo Router details: [`journey-expo-router.md`](./journey-expo-router.md)  
+Expo Router details: [`journey-expo-router.md`](./journey-expo-router.md) (live Phase 1–3)  
+TanStack Router details: [`journey-tanstack-router.md`](./journey-tanstack-router.md) (planned)  
 Popularity / ship order: [`framework-popularity-report.md`](./framework-popularity-report.md)
 
 ## Goal
@@ -33,6 +34,7 @@ src/deterministic_kit/
     parse_js.py              # shared hybrid A+B for .ts/.tsx/.js/.jsx
     registry.py              # framework id → extractor instance
     react_router.py          # live plugin
+    expo_router.py           # live plugin (filesystem + nav)
     vue_router.py            # stub (SFC + router TS later)
     sveltekit.py             # stub (filesystem + Svelte parser later)
 ```
@@ -76,8 +78,9 @@ FrameworkDetection
 |--------------|----------------|---------------|--------|
 | `react-router` | Config AST / JSX | `parse_js` | Live (tree-sitter + nav + journeys) |
 | `next` | Filesystem `app/` `pages/` | `parse_js` for Link / redirects | Planned |
-| `tanstack-router` | FS + `routeTree.gen.ts` | `parse_js` | Planned |
-| `remix` / `expo-router` | Filesystem | `parse_js` for nav | Planned — see [`journey-expo-router.md`](./journey-expo-router.md) |
+| `tanstack-router` | FS + `routeTree.gen.ts` | `parse_js` | Planned — see [`journey-tanstack-router.md`](./journey-tanstack-router.md) |
+| `expo-router` | Filesystem `app/` | `parse_js` for Link / router.* | Live (Phase 1–3) — see [`journey-expo-router.md`](./journey-expo-router.md) |
+| `remix` | Filesystem | `parse_js` for nav | Planned |
 | `angular` | TS `Routes` arrays | `parse_js` | Planned |
 | `vite-react` | Often no router | Thin / delegate if RR present | Planned |
 | `vue-router` | Router TS + `.vue` | Vue SFC compiler + `parse_js` | Stub |

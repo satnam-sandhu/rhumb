@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from deterministic_kit.journeys.base import JourneyExtractor
+from deterministic_kit.journeys.expo_router import ExpoRouterExtractor
 from deterministic_kit.journeys.react_router import ReactRouterExtractor
 from deterministic_kit.journeys.sveltekit import SvelteKitExtractor
 from deterministic_kit.journeys.vue_router import VueRouterExtractor
@@ -9,6 +10,7 @@ from deterministic_kit.journeys.vue_router import VueRouterExtractor
 # Unlisted frameworks → run_journey reports "not implemented".
 EXTRACTORS: dict[str, JourneyExtractor] = {
     "react-router": ReactRouterExtractor(),
+    "expo-router": ExpoRouterExtractor(),
     # Future / stub — same registry, swap impl when ready:
     "vue-router": VueRouterExtractor(),
     "sveltekit": SvelteKitExtractor(),
