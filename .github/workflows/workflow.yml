@@ -1,9 +1,9 @@
-# Filename must match PyPI Trusted Publisher "Workflow name": workflow.yml
-name: Publish to PyPI
+name: CI
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -16,20 +16,3 @@ jobs:
         run: |
           uv sync --group dev
           uv run pytest -q
-
-  publish:
-    needs: test
-    runs-on: ubuntu-latest
-    environment:
-      name: uv
-      url: https://pypi.org/project/rhumb/
-    permissions:
-      id-token: write # required for PyPI Trusted Publishing (OIDC)
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - name: Build
-        run: uv build
-      - name: Publish
-        run: uv publish

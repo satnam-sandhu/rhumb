@@ -2,9 +2,9 @@
 
 Static user journey graphs from frontend source.
 
-Install::
+Install from GitHub (see README)::
 
-    pip install rhumb
+    uv pip install git+https://github.com/satnam-sandhu/rhumb.git
 
 Library::
 

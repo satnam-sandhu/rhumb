@@ -20,21 +20,76 @@ Static **user journey** graphs from frontend source — routes, navigation edges
 
 Detection already recognizes several of the “coming soon” stacks from `package.json`; journey extraction ships only for the **Supported** rows today.
 
+## Prerequisites
+
+| Tool | Version | Why |
+|------|---------|-----|
+| [Python](https://www.python.org/downloads/) | **3.11+** | Runtime (`requires-python = ">=3.11"`) |
+| [Git](https://git-scm.com/) | any recent | Clone / install from GitHub |
+| [uv](https://docs.astral.sh/uv/) | latest | Recommended — sync deps + run CLI without a global `pip install` |
+
+Optional: Node.js only if you later use the TypeScript binder miss-path against a project that needs it; the default tree-sitter path does not require Node.
+
+Install uv (if needed):
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
 ## Install
 
-```bash
-pip install rhumb
-```
+Not on PyPI yet. Use the GitHub repo.
 
-From this repo (editable):
+### A — Install from repo URL (into your env / project)
 
 ```bash
-uv sync
-# or
-pip install -e .
+# with uv (preferred)
+uv pip install git+https://github.com/satnam-sandhu/rhumb.git
+
+# or with pip
+pip install git+https://github.com/satnam-sandhu/rhumb.git
 ```
 
-One install → **CLI** and **Python import**.
+Then:
+
+```bash
+rhumb ./my-app --journey
+```
+
+```python
+from rhumb import extract_end_routes
+print(extract_end_routes("./my-app"))
+```
+
+### B — Clone and run locally (no PyPI, no global package install)
+
+```bash
+git clone https://github.com/satnam-sandhu/rhumb.git
+cd rhumb
+uv sync --group dev          # creates .venv + installs deps
+```
+
+Run CLI / tests via `uv run` (uses the project venv; you do not need `pip install -e .`):
+
+```bash
+uv run rhumb ./path/to/my-app --journey
+uv run rhumb ./path/to/my-app --journey -v
+uv run pytest -q
+```
+
+Library import from this checkout:
+
+```bash
+uv run python -c 'from rhumb import extract_end_routes; print(extract_end_routes("./path/to/my-app"))'
+```
+
+Or open a shell in the synced env:
+
+```bash
+uv run python
+>>> from rhumb import extract_end_routes
+>>> extract_end_routes("./path/to/my-app")
+```
 
 ---
 
@@ -209,12 +264,3 @@ See `docs/journey-architecture.md` for the plugin model.
 ## License
 
 MIT
-
-## Publish to PyPI
-
-Trusted Publishing is configured for GitHub Actions (`.github/workflows/workflow.yml`, environment `uv`).
-
-1. On PyPI: save the GitHub publisher (project `rhumb`, repo `satnam-sandhu/rhumb`, workflow `workflow.yml`, env `uv`).
-2. On GitHub → Settings → Environments → create environment named exactly `uv`.
-3. Bump version in `pyproject.toml` / `rhumb.__version__`, commit, tag, create a GitHub **Release**.
-4. The workflow runs tests, `uv build`, then `uv publish` via OIDC (no API token).
