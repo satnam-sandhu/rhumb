@@ -104,3 +104,22 @@ See `docs/journey-architecture.md` for the plugin model.
 ## License
 
 MIT
+
+## Publish to PyPI
+
+Trusted Publishing is configured for GitHub Actions (`.github/workflows/workflow.yml`, environment `uv`).
+
+1. On PyPI: save the GitHub publisher (project `tributary`, repo `satnam-sandhu/tributary`, workflow `workflow.yml`, env `uv`).
+2. On GitHub → **Settings → Environments** → create environment named exactly `uv`.
+3. Bump version in `pyproject.toml` / `tributary.__version__`, commit, tag, create a GitHub **Release**.
+4. The workflow runs tests, `uv build`, then `uv publish` via OIDC (no API token).
+
+```bash
+# after pip install from PyPI
+pip install tributary
+tributary ./app --journey
+```
+
+```python
+from tributary import extract_journeys
+```

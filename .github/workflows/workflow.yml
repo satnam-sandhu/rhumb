@@ -1,0 +1,35 @@
+# Filename must match PyPI Trusted Publisher "Workflow name": workflow.yml
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Sync and test
+        run: |
+          uv sync --group dev
+          uv run pytest -q
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: uv
+      url: https://pypi.org/project/tributary/
+    permissions:
+      id-token: write # required for PyPI Trusted Publishing (OIDC)
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Build
+        run: uv build
+      - name: Publish
+        run: uv publish
