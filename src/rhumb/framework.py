@@ -6,6 +6,18 @@ from pathlib import Path
 
 SKIP_DIRS = {"node_modules", "dist", "build", ".git", ".venv", "graphify-out"}
 
+CODE_EXTENSIONS = {
+    ".ts",
+    ".tsx",
+    ".js",
+    ".jsx",
+    ".mjs",
+    ".cjs",
+    ".vue",
+    ".svelte",
+    ".json",
+}
+
 
 @dataclass(frozen=True)
 class FrameworkDetection:
@@ -16,6 +28,12 @@ class FrameworkDetection:
     root: str | None = None
     package_name: str | None = None
 
+
+def resolve_project_dir(scan_root: Path, project_root: str | None) -> Path:
+    """Map a FrameworkDetection.root back to an absolute project directory."""
+    if not project_root or project_root == scan_root.name:
+        return scan_root
+    return scan_root / project_root
 
 
 def detect_all_frameworks(project_path: Path) -> list[FrameworkDetection]:

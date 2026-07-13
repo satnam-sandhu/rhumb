@@ -34,12 +34,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--journey",
         action="store_true",
-        help="Map user journeys from routes using AST graphs",
+        help="Emit JSON map: end route → inbound journey paths",
     )
     parser.add_argument(
         "--instrument",
         action="store_true",
-        help="Detect PostHog initialization and instrumentation using AST graphs",
+        help="Detect PostHog initialization and instrumentation",
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="Print detection + route/edge detail on stderr",
     )
     args = parser.parse_args(argv)
 
@@ -49,13 +55,16 @@ def main(argv: list[str] | None = None) -> int:
     try:
         project_path = validate_project_path(args.path)
         context = run_prerequisites(project_path)
-        print_prerequisites(context)
+        if args.verbose or args.instrument:
+            print_prerequisites(context)
+            if args.journey or args.instrument:
+                print()
 
         if args.journey:
-            print()
-            run_journey(context)
+            run_journey(context, verbose=args.verbose)
         if args.instrument:
-            print()
+            if args.journey:
+                print()
             run_instrument(context)
     except ValueError as exc:
         print(f"Error: {exc}", file=sys.stderr)

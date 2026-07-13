@@ -19,9 +19,9 @@ Every framework plugin returns the same shape: `JourneyGraph` (routes, edges, ga
 1. **One shell, many plugins** — framework id → extractor; no giant `if/elif` forever.
 2. **Shared JS/TS hybrid** — tree-sitter (A) hot path + TypeScript binder (B) miss-path only; lives in `parse_js`, not inside each plugin.
 3. **SFC parsers stay in plugins** — Vue (`.vue`) and Svelte (`.svelte`) never go in `parse_js`.
-4. **Filesystem-first where the framework is file-based** — Next, SvelteKit, Expo, Remix, TanStack routes dirs; AST supplements nav/redirects.
+4. **Filesystem-first where the framework is file-based** — Next, SvelteKit, Expo, Remix, TanStack routes dirs; `parse_js` supplements nav/redirects.
 5. **Gaps over silent wrongness** — unresolved routes/edges become `JourneyGap` with confidence.
-6. **Graphify supplements** — import/component graph for resolve; not the route DSL parser.
+6. **Hybrid parse only** — tree-sitter hot path + TypeScript binder miss-path; no external code graph.
 
 ## Module layout
 
@@ -51,17 +51,25 @@ FrameworkDetection
  get_extractor(framework) ── none → "not registered"
         │
         ▼
- plugin.extract(project_dir, detection, ast?)
+ plugin.extract(project_dir, detection)
         │
         ├─ config / JSX / FS routes ──► RouteNode[]
         ├─ Link / navigate / nav cfg ─► NavEdge[]
-        ├─ parse_js (if JS/TS) ───────► syntax (+ B on miss)
-        ├─ Graphify imports ──────────► component → file
+        ├─ parse_js (A + B on miss) ──► syntax + imports
         └─ unresolved ────────────────► JourneyGap[]
         │
         ▼
    JourneyGraph
+        │
+        ▼
+ build_journeys → journeys_by_end  (shared; no plugin code)
+        │
+        ▼
+   { "/end": [[…steps…], …] }   # CLI / extract_end_routes JSON
 ```
+
+New frameworks: implement ``JourneyExtractor.extract`` → ``JourneyGraph`` only.
+Path enum + end-route JSON stay shared — no rewrite.
 
 ## Hybrid parse (A + B)
 

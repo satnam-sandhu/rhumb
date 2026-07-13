@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Any
 
 from rhumb.framework import FrameworkDetection
-from rhumb.graphify_runner import AstResult
 from rhumb.journeys.parse_js import (
     JsParseResult,
     extract_imports,
@@ -890,9 +889,8 @@ class ExpoRouterExtractor:
         self,
         project_dir: Path,
         detection: FrameworkDetection,
-        ast_result: AstResult | None = None,
     ) -> JourneyGraph:
-        del detection, ast_result
+        del detection
         project_dir = project_dir.resolve()
         app_root = find_app_root(project_dir)
         routes, gaps = extract_filesystem_routes(project_dir, app_root)

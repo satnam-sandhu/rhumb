@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import Any
 
 from rhumb.framework import FrameworkDetection
-from rhumb.graphify_runner import AstResult
 from rhumb.journeys.parse_js import (
     JsParseResult,
     extract_imports,
@@ -1811,9 +1810,8 @@ class TanStackRouterExtractor:
         self,
         project_dir: Path,
         detection: FrameworkDetection,
-        ast_result: AstResult | None = None,
     ) -> JourneyGraph:
-        del detection, ast_result
+        del detection
         project_dir = project_dir.resolve()
         routes, gaps, meta = extract_routes(project_dir)
 

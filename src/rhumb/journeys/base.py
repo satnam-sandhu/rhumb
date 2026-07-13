@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Protocol, runtime_checkable
 
 from rhumb.framework import FrameworkDetection
-from rhumb.graphify_runner import AstResult
 from rhumb.journeys.types import JourneyGraph
 
 
@@ -23,7 +22,6 @@ class JourneyExtractor(Protocol):
         self,
         project_dir: Path,
         detection: FrameworkDetection,
-        ast_result: AstResult | None = None,
     ) -> JourneyGraph:
         """Build a journey graph for one detected project package."""
         ...

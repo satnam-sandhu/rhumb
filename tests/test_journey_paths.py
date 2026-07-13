@@ -4,10 +4,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from rhumb.journeys.paths import build_journeys, format_journey
+from rhumb.journeys.paths import (
+    build_journeys,
+    end_route_map,
+    format_journey,
+    journeys_by_end,
+    serialize_end_routes,
+)
 from rhumb.journeys.types import (
-    Confidence,
     JourneyGraph,
+    JourneyPath,
     NavEdge,
     RouteNode,
     RouteSource,
@@ -74,3 +80,59 @@ def test_shared_sidebar_from_home_only() -> None:
     assert "/ → /profile" in texts
     # Shared chrome must not create calendar → profile clique by default
     assert "/ → /calendar → /profile" not in texts
+
+
+def test_journeys_by_end_groups_inbound_paths() -> None:
+    journeys = (
+        JourneyPath(steps=("/search", "/product-details", "/cart", "/checkout")),
+        JourneyPath(steps=("/search", "/cart", "/checkout")),
+        JourneyPath(steps=("/", "/profile")),
+        JourneyPath(steps=("/search", "/product-details", "/cart", "/checkout")),  # dup
+    )
+    by_end = journeys_by_end(journeys)
+    assert by_end == {
+        "/checkout": [
+            ["/search", "/product-details", "/cart", "/checkout"],
+            ["/search", "/cart", "/checkout"],
+        ],
+        "/profile": [["/", "/profile"]],
+    }
+
+
+def test_end_route_map_and_serialize_single_vs_multi() -> None:
+    routes = (
+        _route("/search"),
+        _route("/cart"),
+        _route("/checkout"),
+    )
+    edges = (
+        NavEdge("/search", "/cart", "a.tsx", 1, "link"),
+        NavEdge("/cart", "/checkout", "b.tsx", 2, "link"),
+    )
+    base = JourneyGraph(
+        framework="react-router",
+        project_root=Path("/tmp/shop"),
+        routes=routes,
+        edges=edges,
+    )
+    graph = JourneyGraph(
+        framework=base.framework,
+        project_root=base.project_root,
+        routes=base.routes,
+        edges=base.edges,
+        journeys=build_journeys(base, start="/search"),
+    )
+    single = end_route_map(graph)
+    assert "/checkout" in single
+    assert ["/search", "/cart", "/checkout"] in single["/checkout"]
+    assert serialize_end_routes([graph]) == single
+
+    other = JourneyGraph(
+        framework="expo-router",
+        project_root=Path("/tmp/mobile"),
+        journeys=(JourneyPath(steps=("/", "/settings")),),
+    )
+    multi = serialize_end_routes([graph, other])
+    assert "shop:react-router" in multi
+    assert "mobile:expo-router" in multi
+    assert multi["mobile:expo-router"]["/settings"] == [["/", "/settings"]]

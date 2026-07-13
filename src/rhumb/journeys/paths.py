@@ -1,15 +1,25 @@
 """Turn route+nav edges into concrete journey path sequences.
 
-Example output shape:
+Framework-agnostic: every plugin returns ``JourneyGraph``; this module
+only consumes routes/edges/journeys — no per-framework branches.
+
+Example path list:
   /search → /product-details → /cart → /checkout
+
+JSON view (by destination):
+  {"/checkout": [["/search", "/product-details", "/cart", "/checkout"], ...]}
 """
 
 from __future__ import annotations
 
 from collections import defaultdict
 from pathlib import Path
+from typing import Iterable, Mapping, Sequence
 
 from rhumb.journeys.types import JourneyGraph, JourneyPath, NavEdge, RouteNode
+
+# JSON-ready: end route → list of step lists that terminate there
+EndRouteMap = dict[str, list[list[str]]]
 
 
 def build_journeys(
@@ -33,6 +43,64 @@ def build_journeys(
     # Prefer longer funnels first (ecommerce-style), then lexical for stability.
     raw.sort(key=lambda steps: (-len(steps), steps))
     return tuple(JourneyPath(steps=steps) for steps in raw)
+
+
+def journeys_by_end(journeys: Iterable[JourneyPath]) -> EndRouteMap:
+    """Group journey step lists by their terminal route.
+
+    Pure transform — framework-independent. Same shape for React Router,
+    TanStack, Expo, and future plugins.
+
+    Returns
+    -------
+    dict[str, list[list[str]]]
+        ``{ "/checkout": [["/search", …, "/checkout"], …], … }``
+        Keys sorted; each destination's paths keep input order (deduped).
+    """
+    grouped: dict[str, list[list[str]]] = defaultdict(list)
+    seen: dict[str, set[tuple[str, ...]]] = defaultdict(set)
+
+    for journey in journeys:
+        steps = tuple(journey.steps)
+        if len(steps) < 2:
+            continue
+        end = steps[-1]
+        if steps in seen[end]:
+            continue
+        seen[end].add(steps)
+        grouped[end].append(list(steps))
+
+    return {end: grouped[end] for end in sorted(grouped)}
+
+
+def end_route_map(graph: JourneyGraph) -> EndRouteMap:
+    """``journeys_by_end`` for one ``JourneyGraph`` (uses ``graph.journeys``)."""
+    return journeys_by_end(graph.journeys)
+
+
+def serialize_end_routes(graphs: Sequence[JourneyGraph]) -> Mapping[str, object]:
+    """JSON-ready payload for one or many detected projects.
+
+    - One graph → flat ``{ end_route: [paths…] }`` (caller's requested shape).
+    - Many graphs → ``{ "<project-key>": { end_route: [paths…] }, … }``.
+    """
+    if not graphs:
+        return {}
+    if len(graphs) == 1:
+        return end_route_map(graphs[0])
+
+    payload: dict[str, EndRouteMap] = {}
+    for graph in graphs:
+        payload[_project_key(graph)] = end_route_map(graph)
+    return payload
+
+
+def _project_key(graph: JourneyGraph) -> str:
+    root = graph.project_root
+    name = root.name or str(root)
+    if graph.framework and graph.framework not in name:
+        return f"{name}:{graph.framework}"
+    return name
 
 
 def _default_start(routes: tuple[RouteNode, ...]) -> str:

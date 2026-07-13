@@ -67,30 +67,19 @@ Aliases: `BrowserRouter as Router`, imports from `react-router` or `react-router
 | String-template paths | `path: \`/users/${id}\`` — rare in static config |
 | Layout routes (no `path`) | Inherit parent prefix only |
 
-## What graphify AST gives us today
+## Component resolve
 
-Ran AST on `free-react-tailwind-admin-dashboard`: **353 nodes, 611 edges, 104 files**.
+Map `element={<Home />}` / `Component: Home` → import in same file → `src/pages/Dashboard/Home.tsx`
+via tree-sitter `extract_imports` (TypeScript binder on unresolved miss later).
 
-**Useful:**
-
-- File-level import graph (`App.tsx` → `src/pages/...`)
-- Component function nodes (`App()`, `Home()`)
-- `react-router` import detection
-
-**Missing (confirmed):**
-
-- No `<Route>` / `createBrowserRouter` nodes
-- No `path` / `element` prop extraction
-- No `<Link to="...">` edges
-
-**Conclusion:** Route and navigation extraction needs the shared **`parse_js`** hybrid (tree-sitter + optional TS binder). Graphify supplements component resolution after routes are parsed. See architecture doc.
+Route and navigation extraction uses shared **`parse_js`** hybrid (tree-sitter + optional TS binder).
 
 ## Proposed pipeline (this plugin)
 
 ```
 ┌─────────────────┐     ┌──────────────────────┐     ┌─────────────────┐
-│ Find route      │────▶│ Parse route tree     │────▶│ Resolve         │
-│ candidate files │     │ parse_js (A, then B) │     │ via Graphify    │
+│ Find route      │────▶│ Parse route tree     │────▶│ Resolve via     │
+│ candidate files │     │ parse_js (A, then B) │     │ extract_imports │
 └─────────────────┘     └──────────────────────┘     └────────┬────────┘
                                                                 │
 ┌─────────────────┐     ┌──────────────────────┐               │
@@ -138,9 +127,8 @@ Example from sample `App.tsx`:
 
 ### Step 3 — Resolve components
 
-Map `element={<Home />}` / `Component: Home` → import in same file → `src/pages/Dashboard/Home.tsx`.
-
-Use graphify AST `imports_from` edges where possible; fall back to local import table from parser.
+Map `element={<Home />}` / `Component: Home` → import in same file → `src/pages/Dashboard/Home.tsx`
+via local import table from `parse_js`.
 
 ### Step 4 — Parse navigation transitions
 
@@ -195,7 +183,7 @@ graph = extractor.extract(project_dir, project)
 
 ### Phase 0 — Spike (done)
 
-- [x] Confirm graphify AST gaps
+- [x] Confirm parse_js covers routes/nav (no external code graph)
 - [x] Document patterns and sample project
 - [x] Candidate file finder
 - [x] Regex prototype on `App.tsx` route list
@@ -205,7 +193,7 @@ graph = extractor.extract(project_dir, project)
 
 - [x] Implement `parse_js` tree-sitter; call from this plugin
 - [x] Path joining + index / layout routes
-- [x] Component import resolution via Graphify
+- [x] Component import resolution via `extract_imports`
 - [x] Unit tests against sample `App.tsx`
 
 ### Phase 2 — Navigation (done)

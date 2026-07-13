@@ -11,7 +11,14 @@ from rhumb.journeys.react_router import (
     join_route_paths,
 )
 from rhumb.journeys.registry import EXTRACTORS, get_extractor
-from rhumb.journeys.paths import build_journeys, format_journey
+from rhumb.journeys.paths import (
+    EndRouteMap,
+    build_journeys,
+    end_route_map,
+    format_journey,
+    journeys_by_end,
+    serialize_end_routes,
+)
 from rhumb.journeys.tanstack_router import TanStackRouterExtractor
 from rhumb.journeys.types import (
     Confidence,
@@ -38,7 +45,9 @@ __all__ = [
     "RouteNode",
     "RouteSource",
     "TanStackRouterExtractor",
+    "EndRouteMap",
     "build_journeys",
+    "end_route_map",
     "extract_navigation",
     "extract_nav_from_parse",
     "extract_routes_from_parse",
@@ -47,5 +56,7 @@ __all__ = [
     "format_journey",
     "get_extractor",
     "join_route_paths",
+    "journeys_by_end",
     "parse_js_ts",
+    "serialize_end_routes",
 ]

@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from rhumb.framework import FrameworkDetection
-from rhumb.graphify_runner import AstResult
 from rhumb.journeys.parse_js import (
     JsParseResult,
     extract_imports,
@@ -146,7 +144,6 @@ def extract_routes_from_parse(
     parsed: JsParseResult,
     source_file: str,
     project_dir: Path,
-    component_files: dict[str, str] | None = None,
 ) -> tuple[list[RouteNode], list[JourneyGap]]:
     """Extract routes from JSX ``<Route>`` trees and data-router object configs."""
     if not parsed.ok or parsed.root is None:
@@ -167,8 +164,6 @@ def extract_routes_from_parse(
     def resolve_component(name: str | None) -> str | None:
         if not name:
             return None
-        if component_files and name in component_files:
-            return component_files[name]
         module = local_imports.get(name)
         if not module:
             return name
@@ -463,8 +458,6 @@ def extract_routes_from_parse(
         def resolve_name(name: str | None) -> str | None:
             if not name:
                 return None
-            if component_files and name in component_files:
-                return component_files[name]
             module = file_imports.get(name)
             if not module:
                 return name
@@ -781,47 +774,6 @@ def _resolve_module_path(project_dir: Path, source_file: Path, module: str) -> s
         return None
 
 
-def component_files_from_ast(ast_result: AstResult | None, source_file: str) -> dict[str, str]:
-    """Build component name → source file from Graphify imports edges."""
-    if ast_result is None or not ast_result.graph_path.exists():
-        return {}
-
-    try:
-        graph = json.loads(ast_result.graph_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return {}
-
-    nodes = {n["id"]: n for n in graph.get("nodes", []) if "id" in n}
-    source_ids = {
-        nid
-        for nid, node in nodes.items()
-        if node.get("source_file") == source_file or node.get("label") == Path(source_file).name
-    }
-    if not source_ids:
-        return {}
-
-    mapping: dict[str, str] = {}
-    for link in graph.get("links", []):
-        if link.get("relation") not in {"imports", "imports_from"}:
-            continue
-        if link.get("source") not in source_ids:
-            continue
-        target = nodes.get(link.get("target", ""))
-        if not target:
-            continue
-        target_file = target.get("source_file")
-        if not target_file:
-            continue
-        label = str(target.get("label", ""))
-        if link.get("relation") == "imports" and label.endswith("()"):
-            mapping[label[:-2]] = target_file.replace("\\", "/")
-        elif link.get("relation") == "imports_from":
-            stem = Path(target_file).stem
-            if stem and stem not in mapping:
-                mapping[stem] = target_file.replace("\\", "/")
-    return mapping
-
-
 def build_file_route_index(routes: list[RouteNode] | tuple[RouteNode, ...]) -> dict[str, list[str]]:
     """Map source files (page component or layout) → route url_paths."""
     index: dict[str, list[str]] = {}
@@ -1061,7 +1013,6 @@ class ReactRouterExtractor:
         self,
         project_dir: Path,
         detection: FrameworkDetection,
-        ast_result: AstResult | None = None,
     ) -> JourneyGraph:
         del detection
         project_dir = project_dir.resolve()
@@ -1074,14 +1025,12 @@ class ReactRouterExtractor:
             abs_path = project_dir / candidate.path
             source_file = str(candidate.path).replace("\\", "/")
             parsed = parse_js_ts(abs_path)
-            graph_components = component_files_from_ast(ast_result, source_file)
 
             if parsed.ok:
                 file_routes, file_gaps = extract_routes_from_parse(
                     parsed,
                     source_file,
                     project_dir,
-                    component_files=graph_components or None,
                 )
                 routes.extend(file_routes)
                 gaps.extend(file_gaps)

@@ -11,7 +11,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from rhumb.framework import FrameworkDetection
-from rhumb.graphify_runner import AstResult
 from rhumb.journeys.types import Confidence, JourneyGap, JourneyGraph
 
 
@@ -22,9 +21,8 @@ class VueRouterExtractor:
         self,
         project_dir: Path,
         detection: FrameworkDetection,
-        ast_result: AstResult | None = None,
     ) -> JourneyGraph:
-        del detection, ast_result
+        del detection
         return JourneyGraph(
             framework=self.framework,
             project_root=project_dir,

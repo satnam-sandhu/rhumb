@@ -219,7 +219,6 @@ def test_nav_link_navigate_redirect(tmp_path: Path) -> None:
             signals=[],
             root=".",
         ),
-        None,
     )
     kinds = {(e.to_path, e.kind) for e in graph.edges}
     assert ("/posts", "link") in kinds
@@ -279,7 +278,6 @@ def test_extractor_builds_journeys(tmp_path: Path) -> None:
             signals=[],
             root=".",
         ),
-        None,
     )
     journeys = build_journeys(graph)
     assert graph.meta["dynamic_form"] == "tanstack"

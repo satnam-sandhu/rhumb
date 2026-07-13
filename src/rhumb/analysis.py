@@ -3,10 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from graphify.detect import detect
-
-from rhumb.framework import FrameworkDetection, detect_all_frameworks, format_projects
-from rhumb.graphify_runner import AstResult, format_ast_results, run_ast_for_projects
+from rhumb.framework import (
+    CODE_EXTENSIONS,
+    SKIP_DIRS,
+    FrameworkDetection,
+    detect_all_frameworks,
+    format_projects,
+)
 
 
 @dataclass(frozen=True)
@@ -14,21 +17,34 @@ class AnalysisContext:
     project_path: Path
     corpus: dict
     projects: list[FrameworkDetection]
-    ast_results: list[AstResult]
 
 
 def scan_project(path: Path) -> dict:
-    result = detect(path)
-    code_files = result.get("files", {}).get("code", [])
+    """Walk the tree for frontend-ish source files (no external indexer)."""
+    root = path.resolve()
+    code_files: list[str] = []
+    for candidate in root.rglob("*"):
+        if not candidate.is_file():
+            continue
+        if any(part in SKIP_DIRS for part in candidate.parts):
+            continue
+        if candidate.suffix.lower() not in CODE_EXTENSIONS:
+            continue
+        code_files.append(str(candidate))
+
     if not code_files:
         raise ValueError(f"No supported code files found in: {path}")
-    return result
+
+    return {
+        "total_files": len(code_files),
+        "files": {"code": sorted(code_files)},
+    }
 
 
 def format_summary(result: dict) -> str:
     files_by_type = result.get("files", {})
     lines = [
-        f"Corpus: {result.get('total_files', 0)} files · ~{result.get('total_words', 0):,} words",
+        f"Corpus: {result.get('total_files', 0)} files",
     ]
 
     type_labels = {
@@ -44,15 +60,11 @@ def format_summary(result: dict) -> str:
         if count:
             lines.append(f"  {label}: {count} files")
 
-    skipped = result.get("skipped_sensitive", [])
-    if skipped:
-        lines.append(f"  skipped: {len(skipped)} sensitive files")
-
     return "\n".join(lines)
 
 
 def analyze(path: str | Path) -> AnalysisContext:
-    """Detect frameworks and build AST context for a project (programmatic API).
+    """Detect frameworks for a project (programmatic API).
 
     Same as :func:`run_prerequisites` — preferred name for library use.
     """
@@ -60,19 +72,17 @@ def analyze(path: str | Path) -> AnalysisContext:
 
 
 def run_prerequisites(project_path: Path) -> AnalysisContext:
-    """Framework detection and AST generation shared by journey and instrument flows."""
+    """Framework detection shared by journey and instrument flows."""
     project_path = project_path.resolve()
     corpus = scan_project(project_path)
     projects = detect_all_frameworks(project_path)
     if not projects:
         raise ValueError("No frontend projects detected in the given path.")
 
-    ast_results = run_ast_for_projects(project_path, projects)
     return AnalysisContext(
         project_path=project_path,
         corpus=corpus,
         projects=projects,
-        ast_results=ast_results,
     )
 
 
@@ -81,5 +91,3 @@ def print_prerequisites(context: AnalysisContext) -> None:
     print(format_summary(context.corpus))
     print()
     print(format_projects(context.projects))
-    print()
-    print(format_ast_results(context.ast_results))

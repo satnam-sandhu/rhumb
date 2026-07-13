@@ -8,6 +8,7 @@ import rhumb
 from rhumb import (
     JourneyGraph,
     analyze,
+    extract_end_routes,
     extract_journeys,
 )
 
@@ -58,3 +59,17 @@ def test_analyze_then_extract(tmp_path: Path) -> None:
     assert ctx.projects[0].framework == "tanstack-router"
     graphs = extract_journeys(ctx)
     assert graphs[0].journeys or graphs[0].edges
+
+
+def test_extract_end_routes_json_shape(tmp_path: Path) -> None:
+    _mini_tanstack(tmp_path)
+    payload = extract_end_routes(tmp_path)
+    assert isinstance(payload, dict)
+    # Single project → flat end → paths map
+    for end, paths in payload.items():
+        assert isinstance(end, str)
+        assert end.startswith("/")
+        assert isinstance(paths, list)
+        for steps in paths:
+            assert isinstance(steps, list)
+            assert steps[-1] == end
