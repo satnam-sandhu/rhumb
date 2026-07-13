@@ -2,7 +2,7 @@
 
 **Generated:** 2026-07-09  
 **Source:** [npm registry downloads API](https://api.npmjs.org/downloads/) — `last-week` window (2026-07-02 → 2026-07-08)  
-**Scope:** Frameworks detected by `tributary.framework.detect_all_frameworks()`
+**Scope:** Frameworks detected by `rhumb.framework.detect_all_frameworks()`
 
 ## Ranking
 

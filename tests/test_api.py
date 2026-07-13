@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import tributary
-from tributary import (
+import rhumb
+from rhumb import (
     JourneyGraph,
     analyze,
     extract_journeys,
@@ -34,7 +34,7 @@ def _mini_tanstack(tmp: Path) -> Path:
 
 
 def test_package_version_and_exports() -> None:
-    assert tributary.__version__ == "0.1.0"
+    assert rhumb.__version__ == "0.1.0"
     assert callable(extract_journeys)
     assert callable(analyze)
 

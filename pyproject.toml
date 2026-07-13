@@ -1,7 +1,7 @@
 [project]
-name = "tributary"
+name = "rhumb"
 version = "0.1.0"
-description = "Tributary: static user journey mapping and PostHog instrumentation detection"
+description = "Rhumb: constant-bearing journeys through your app. Static journey mapping from frontend source."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
@@ -40,13 +40,13 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/satnam-sandhu/tributary"
-Documentation = "https://github.com/satnam-sandhu/tributary#readme"
-Repository = "https://github.com/satnam-sandhu/tributary"
-Issues = "https://github.com/satnam-sandhu/tributary/issues"
+Homepage = "https://github.com/satnam-sandhu/rhumb"
+Documentation = "https://github.com/satnam-sandhu/rhumb#readme"
+Repository = "https://github.com/satnam-sandhu/rhumb"
+Issues = "https://github.com/satnam-sandhu/rhumb/issues"
 
 [project.scripts]
-tributary = "tributary.cli:main"
+rhumb = "rhumb.cli:main"
 
 [dependency-groups]
 dev = [
@@ -58,5 +58,5 @@ requires = ["uv_build>=0.10.9,<0.11.0"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
-module-name = "tributary"
+module-name = "rhumb"
 module-root = "src"

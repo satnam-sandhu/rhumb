@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from tributary.journeys.paths import build_journeys, format_journey
-from tributary.journeys.types import (
+from rhumb.journeys.paths import build_journeys, format_journey
+from rhumb.journeys.types import (
     Confidence,
     JourneyGraph,
     NavEdge,

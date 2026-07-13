@@ -4,9 +4,9 @@ import argparse
 import sys
 from pathlib import Path
 
-from tributary.analysis import print_prerequisites, run_prerequisites
-from tributary.instrument import run_instrument
-from tributary.journey import run_journey
+from rhumb.analysis import print_prerequisites, run_prerequisites
+from rhumb.instrument import run_instrument
+from rhumb.journey import run_journey
 
 
 def validate_project_path(path: Path) -> Path:
@@ -23,8 +23,7 @@ def validate_project_path(path: Path) -> Path:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Tributary — map user journeys and PostHog instrumentation "
-            "from frontend source (static, no runtime)."
+            "Rhumb — constant-bearing journeys through your app."
         ),
     )
     parser.add_argument(

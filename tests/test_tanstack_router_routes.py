@@ -5,10 +5,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from tributary.framework import FrameworkDetection
-from tributary.journeys.parse_js import parse_js_ts
-from tributary.journeys.paths import build_journeys
-from tributary.journeys.tanstack_router import (
+from rhumb.framework import FrameworkDetection
+from rhumb.journeys.parse_js import parse_js_ts
+from rhumb.journeys.paths import build_journeys
+from rhumb.journeys.tanstack_router import (
     TanStackRouterExtractor,
     extract_filesystem_routes,
     extract_nav_from_parse,

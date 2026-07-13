@@ -3,11 +3,11 @@ from __future__ import annotations
 from dataclasses import replace
 from pathlib import Path
 
-from tributary.analysis import AnalysisContext, run_prerequisites
-from tributary.graphify_runner import resolve_project_dir
-from tributary.journeys.paths import build_journeys, format_journey
-from tributary.journeys.registry import get_extractor
-from tributary.journeys.types import JourneyGraph
+from rhumb.analysis import AnalysisContext, run_prerequisites
+from rhumb.graphify_runner import resolve_project_dir
+from rhumb.journeys.paths import build_journeys, format_journey
+from rhumb.journeys.registry import get_extractor
+from rhumb.journeys.types import JourneyGraph
 
 
 def extract_journeys(
@@ -21,10 +21,10 @@ def extract_journeys(
     ----------
     path:
         Project root, or an existing :class:`AnalysisContext` from
-        :func:`tributary.analyze`.
+        :func:`rhumb.analyze`.
     build_paths:
         When True (default), enumerate concrete journey sequences via
-        :func:`~tributary.journeys.paths.build_journeys`.
+        :func:`~rhumb.journeys.paths.build_journeys`.
 
     Returns
     -------
@@ -34,7 +34,7 @@ def extract_journeys(
 
     Example
     -------
-    >>> from tributary import extract_journeys
+    >>> from rhumb import extract_journeys
     >>> graphs = extract_journeys("./my-app")
     >>> for g in graphs:
     ...     print(g.framework, len(g.routes), len(g.journeys))

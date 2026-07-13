@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from tributary.framework import FrameworkDetection
-from tributary.journeys.parse_js import extract_imports, parse_js_ts
-from tributary.journeys.react_router import (
+from rhumb.framework import FrameworkDetection
+from rhumb.journeys.parse_js import extract_imports, parse_js_ts
+from rhumb.journeys.react_router import (
     ReactRouterExtractor,
     extract_nav_from_parse,
     extract_routes_from_parse,

@@ -10,9 +10,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from tributary.framework import FrameworkDetection
-from tributary.graphify_runner import AstResult
-from tributary.journeys.types import Confidence, JourneyGap, JourneyGraph
+from rhumb.framework import FrameworkDetection
+from rhumb.graphify_runner import AstResult
+from rhumb.journeys.types import Confidence, JourneyGap, JourneyGraph
 
 
 class SvelteKitExtractor:

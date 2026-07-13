@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: uv
-      url: https://pypi.org/project/tributary/
+      url: https://pypi.org/project/rhumb/
     permissions:
       id-token: write # required for PyPI Trusted Publishing (OIDC)
       contents: read

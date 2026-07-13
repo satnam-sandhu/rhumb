@@ -1,7 +1,7 @@
-from tributary.journeys.base import JourneyExtractor
-from tributary.journeys.expo_router import ExpoRouterExtractor
-from tributary.journeys.parse_js import JsParseResult, follow_export, parse_js_ts
-from tributary.journeys.react_router import (
+from rhumb.journeys.base import JourneyExtractor
+from rhumb.journeys.expo_router import ExpoRouterExtractor
+from rhumb.journeys.parse_js import JsParseResult, follow_export, parse_js_ts
+from rhumb.journeys.react_router import (
     ReactRouterExtractor,
     RouteCandidate,
     extract_navigation,
@@ -10,10 +10,10 @@ from tributary.journeys.react_router import (
     find_route_candidates,
     join_route_paths,
 )
-from tributary.journeys.registry import EXTRACTORS, get_extractor
-from tributary.journeys.paths import build_journeys, format_journey
-from tributary.journeys.tanstack_router import TanStackRouterExtractor
-from tributary.journeys.types import (
+from rhumb.journeys.registry import EXTRACTORS, get_extractor
+from rhumb.journeys.paths import build_journeys, format_journey
+from rhumb.journeys.tanstack_router import TanStackRouterExtractor
+from rhumb.journeys.types import (
     Confidence,
     JourneyGap,
     JourneyGraph,

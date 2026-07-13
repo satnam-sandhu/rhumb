@@ -12,7 +12,7 @@ from graphify.detect import detect
 from graphify.export import to_json
 from graphify.extract import collect_files, extract
 
-OUTPUT_BASE = Path(tempfile.gettempdir()) / "tributary"
+OUTPUT_BASE = Path(tempfile.gettempdir()) / "rhumb"
 
 
 @dataclass(frozen=True)

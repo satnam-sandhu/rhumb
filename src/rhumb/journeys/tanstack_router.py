@@ -16,9 +16,9 @@ import re
 from pathlib import Path
 from typing import Any
 
-from tributary.framework import FrameworkDetection
-from tributary.graphify_runner import AstResult
-from tributary.journeys.parse_js import (
+from rhumb.framework import FrameworkDetection
+from rhumb.graphify_runner import AstResult
+from rhumb.journeys.parse_js import (
     JsParseResult,
     extract_imports,
     find_exported_initializer,
@@ -27,11 +27,11 @@ from tributary.journeys.parse_js import (
     parse_js_ts,
     string_literal_value,
 )
-from tributary.journeys.react_router import (
+from rhumb.journeys.react_router import (
     build_file_route_index,
     from_path_for_file,
 )
-from tributary.journeys.types import (
+from rhumb.journeys.types import (
     Confidence,
     JourneyGap,
     JourneyGraph,

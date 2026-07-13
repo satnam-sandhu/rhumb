@@ -1,4 +1,6 @@
-# Tributary
+# Rhumb
+
+> Constant-bearing journeys through your app.
 
 Static **user journey** graphs from frontend source — routes, navigation edges, and concrete paths. No runtime. No LLM in the extract path.
 
@@ -9,15 +11,15 @@ Supports React Router, TanStack Router, Expo Router (more frameworks on the way)
 One install → **CLI** and **Python import**:
 
 ```bash
-pip install tributary
+pip install rhumb
 ```
 
 ```bash
-tributary ./my-app --journey
+rhumb ./my-app --journey
 ```
 
 ```python
-from tributary import extract_journeys
+from rhumb import extract_journeys
 
 for graph in extract_journeys("./my-app"):
     print(graph.framework, list(graph.journeys))
@@ -34,14 +36,14 @@ pip install -e .
 ## CLI
 
 ```bash
-tributary ./my-app --journey
-tributary ./my-app --instrument   # PostHog detection (stub)
+rhumb ./my-app --journey
+rhumb ./my-app --instrument   # PostHog detection (stub)
 ```
 
 ## Library (programmatic)
 
 ```python
-from tributary import extract_journeys
+from rhumb import extract_journeys
 
 graphs = extract_journeys("./my-app")
 
@@ -58,7 +60,7 @@ for graph in graphs:
 Reuse detection/AST context across calls:
 
 ```python
-from tributary import analyze, extract_journeys
+from rhumb import analyze, extract_journeys
 
 ctx = analyze("./my-app")
 graphs = extract_journeys(ctx)
@@ -75,13 +77,13 @@ graphs = extract_journeys(ctx)
 | `JourneyGap` | unresolved target or conflict |
 
 ```python
-from tributary import JourneyGraph, RouteNode, NavEdge, Confidence
+from rhumb import JourneyGraph, RouteNode, NavEdge, Confidence
 ```
 
 ### Per-framework extractors
 
 ```python
-from tributary import detect_all_frameworks, get_extractor
+from rhumb import detect_all_frameworks, get_extractor
 from pathlib import Path
 
 root = Path("./my-app")
@@ -109,17 +111,17 @@ MIT
 
 Trusted Publishing is configured for GitHub Actions (`.github/workflows/workflow.yml`, environment `uv`).
 
-1. On PyPI: save the GitHub publisher (project `tributary`, repo `satnam-sandhu/tributary`, workflow `workflow.yml`, env `uv`).
+1. On PyPI: save the GitHub publisher (project `rhumb`, repo `satnam-sandhu/rhumb`, workflow `workflow.yml`, env `uv`).
 2. On GitHub → **Settings → Environments** → create environment named exactly `uv`.
-3. Bump version in `pyproject.toml` / `tributary.__version__`, commit, tag, create a GitHub **Release**.
+3. Bump version in `pyproject.toml` / `rhumb.__version__`, commit, tag, create a GitHub **Release**.
 4. The workflow runs tests, `uv build`, then `uv publish` via OIDC (no API token).
 
 ```bash
 # after pip install from PyPI
-pip install tributary
-tributary ./app --journey
+pip install rhumb
+rhumb ./app --journey
 ```
 
 ```python
-from tributary import extract_journeys
+from rhumb import extract_journeys
 ```

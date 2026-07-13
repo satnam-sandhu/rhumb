@@ -178,7 +178,7 @@ Return shared `JourneyGraph`:
 ## Module layout (this plugin)
 
 ```
-src/tributary/journeys/
+src/rhumb/journeys/
   react_router.py          # ReactRouterExtractor, candidates, regex spike
   types.py / base.py / …   # shared — see journey-architecture.md
   registry.py              # "react-router" → ReactRouterExtractor()

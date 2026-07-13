@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tributary.analysis import AnalysisContext
+from rhumb.analysis import AnalysisContext
 
 
 def run_instrument(context: AnalysisContext) -> None:

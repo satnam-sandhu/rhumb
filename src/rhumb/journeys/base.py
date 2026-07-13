@@ -3,9 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
-from tributary.framework import FrameworkDetection
-from tributary.graphify_runner import AstResult
-from tributary.journeys.types import JourneyGraph
+from rhumb.framework import FrameworkDetection
+from rhumb.graphify_runner import AstResult
+from rhumb.journeys.types import JourneyGraph
 
 
 @runtime_checkable

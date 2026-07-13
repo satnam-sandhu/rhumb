@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections import defaultdict
 from pathlib import Path
 
-from tributary.journeys.types import JourneyGraph, JourneyPath, NavEdge, RouteNode
+from rhumb.journeys.types import JourneyGraph, JourneyPath, NavEdge, RouteNode
 
 
 def build_journeys(

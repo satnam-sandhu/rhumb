@@ -5,8 +5,8 @@ from pathlib import Path
 
 from graphify.detect import detect
 
-from tributary.framework import FrameworkDetection, detect_all_frameworks, format_projects
-from tributary.graphify_runner import AstResult, format_ast_results, run_ast_for_projects
+from rhumb.framework import FrameworkDetection, detect_all_frameworks, format_projects
+from rhumb.graphify_runner import AstResult, format_ast_results, run_ast_for_projects
 
 
 @dataclass(frozen=True)

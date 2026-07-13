@@ -1,36 +1,38 @@
-"""Tributary — static user journey graphs from frontend source.
+"""Rhumb — constant-bearing journeys through your app.
+
+Static user journey graphs from frontend source.
 
 Install::
 
-    pip install tributary
+    pip install rhumb
 
 Library::
 
-    from tributary import extract_journeys
+    from rhumb import extract_journeys
 
     for graph in extract_journeys("./my-app"):
         print(graph.framework, graph.journeys)
 
 CLI::
 
-    tributary ./my-app --journey
+    rhumb ./my-app --journey
 """
 
 from __future__ import annotations
 
-from tributary.analysis import AnalysisContext, analyze, print_prerequisites, run_prerequisites
-from tributary.cli import main
-from tributary.framework import FrameworkDetection, detect_all_frameworks, format_projects
-from tributary.graphify_runner import (
+from rhumb.analysis import AnalysisContext, analyze, print_prerequisites, run_prerequisites
+from rhumb.cli import main
+from rhumb.framework import FrameworkDetection, detect_all_frameworks, format_projects
+from rhumb.graphify_runner import (
     OUTPUT_BASE,
     prepare_output_base,
     run_ast_for_project,
     run_ast_for_projects,
 )
-from tributary.instrument import run_instrument
-from tributary.journey import extract_journeys, run_journey
-from tributary.journeys.registry import get_extractor
-from tributary.journeys.types import (
+from rhumb.instrument import run_instrument
+from rhumb.journey import extract_journeys, run_journey
+from rhumb.journeys.registry import get_extractor
+from rhumb.journeys.types import (
     Confidence,
     JourneyGap,
     JourneyGraph,
