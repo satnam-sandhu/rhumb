@@ -3,20 +3,42 @@
 Framework-agnostic: every plugin returns ``JourneyGraph``; this module
 only consumes routes/edges/journeys — no per-framework branches.
 
-Example path list:
-  /search → /product-details → /cart → /checkout
+JSON envelope (CLI / ``extract_end_routes``)::
 
-JSON view (by destination):
-  {"/checkout": [["/search", "/product-details", "/cart", "/checkout"], ...]}
+    {
+      "projects": [
+        {
+          "framework": "tanstack-router",
+          "root": "my-app",
+          "ends": {
+            "/checkout": [["/search", "/cart", "/checkout"]]
+          },
+          "gaps": [
+            {
+              "message": "…",
+              "source_file": "src/App.tsx",
+              "source_line": 42,
+              "confidence": "medium"
+            }
+          ]
+        }
+      ]
+    }
 """
 
 from __future__ import annotations
 
 from collections import defaultdict
 from pathlib import Path
-from typing import Iterable, Mapping, Sequence
+from typing import Any, Iterable, Mapping, Sequence
 
-from rhumb.journeys.types import JourneyGraph, JourneyPath, NavEdge, RouteNode
+from rhumb.journeys.types import (
+    JourneyGap,
+    JourneyGraph,
+    JourneyPath,
+    NavEdge,
+    RouteNode,
+)
 
 # JSON-ready: end route → list of step lists that terminate there
 EndRouteMap = dict[str, list[list[str]]]
@@ -78,29 +100,44 @@ def end_route_map(graph: JourneyGraph) -> EndRouteMap:
     return journeys_by_end(graph.journeys)
 
 
-def serialize_end_routes(graphs: Sequence[JourneyGraph]) -> Mapping[str, object]:
-    """JSON-ready payload for one or many detected projects.
+def gaps_to_json(gaps: Iterable[JourneyGap]) -> list[dict[str, Any]]:
+    """Serialize ``JourneyGap`` rows for JSON (stable keys)."""
+    rows: list[dict[str, Any]] = []
+    for gap in gaps:
+        row: dict[str, Any] = {
+            "message": gap.message,
+            "confidence": gap.confidence.value,
+        }
+        if gap.source_file is not None:
+            row["source_file"] = gap.source_file
+        if gap.source_line is not None:
+            row["source_line"] = gap.source_line
+        rows.append(row)
+    return rows
 
-    - One graph → flat ``{ end_route: [paths…] }`` (caller's requested shape).
-    - Many graphs → ``{ "<project-key>": { end_route: [paths…] }, … }``.
-    """
-    if not graphs:
-        return {}
-    if len(graphs) == 1:
-        return end_route_map(graphs[0])
 
-    payload: dict[str, EndRouteMap] = {}
-    for graph in graphs:
-        payload[_project_key(graph)] = end_route_map(graph)
-    return payload
-
-
-def _project_key(graph: JourneyGraph) -> str:
+def project_payload(graph: JourneyGraph) -> dict[str, Any]:
+    """One detected app: ends + gaps (+ framework/root)."""
     root = graph.project_root
-    name = root.name or str(root)
-    if graph.framework and graph.framework not in name:
-        return f"{name}:{graph.framework}"
-    return name
+    return {
+        "framework": graph.framework,
+        "root": root.name or str(root),
+        "ends": end_route_map(graph),
+        "gaps": gaps_to_json(graph.gaps),
+    }
+
+
+def serialize_end_routes(graphs: Sequence[JourneyGraph]) -> Mapping[str, object]:
+    """JSON-ready envelope for one or many detected projects.
+
+    Always::
+
+        {"projects": [{"framework", "root", "ends", "gaps"}, …]}
+
+    ``ends`` alone can look complete while extraction quietly missed
+    links/routes — ``gaps`` carry that audit trail for API/CLI consumers.
+    """
+    return {"projects": [project_payload(graph) for graph in graphs]}
 
 
 def _default_start(routes: tuple[RouteNode, ...]) -> str:

@@ -77,28 +77,41 @@ def extract_end_routes(
     *,
     build_paths: bool = True,
 ) -> Mapping[str, object]:
-    """JSON-ready map: end route → all inbound journey paths.
+    """JSON-ready envelope: projects → ends + gaps.
 
     Framework-agnostic wrapper around :func:`extract_journeys` +
     :func:`~rhumb.journeys.paths.serialize_end_routes`. New framework
     plugins need no changes here — they only return ``JourneyGraph``.
 
-    Single project::
+    Shape::
 
         {
-          "/checkout": [
-            ["/search", "/product-details", "/cart", "/checkout"]
+          "projects": [
+            {
+              "framework": "tanstack-router",
+              "root": "my-app",
+              "ends": {
+                "/checkout": [
+                  ["/search", "/product-details", "/cart", "/checkout"]
+                ]
+              },
+              "gaps": [
+                {
+                  "message": "…",
+                  "source_file": "src/App.tsx",
+                  "source_line": 42,
+                  "confidence": "medium"
+                }
+              ]
+            }
           ]
         }
 
-    Monorepo (multiple detected apps)::
-
-        {
-          "web:tanstack-router": { "/about": [["/", "/about"]] },
-          "mobile:expo-router": { "/settings": [["/", "/settings"]] }
-        }
+    ``ends`` = resolved inbound paths. ``gaps`` = what we could not resolve
+    (same data ``-v`` prints) so callers do not over-trust a sparse map.
     """
     return serialize_end_routes(extract_journeys(path, build_paths=build_paths))
+
 
 
 def run_journey(context: AnalysisContext, *, verbose: bool = False) -> None:

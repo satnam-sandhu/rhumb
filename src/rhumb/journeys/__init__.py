@@ -16,7 +16,9 @@ from rhumb.journeys.paths import (
     build_journeys,
     end_route_map,
     format_journey,
+    gaps_to_json,
     journeys_by_end,
+    project_payload,
     serialize_end_routes,
 )
 from rhumb.journeys.tanstack_router import TanStackRouterExtractor
@@ -54,9 +56,11 @@ __all__ = [
     "find_route_candidates",
     "follow_export",
     "format_journey",
+    "gaps_to_json",
     "get_extractor",
     "join_route_paths",
     "journeys_by_end",
     "parse_js_ts",
+    "project_payload",
     "serialize_end_routes",
 ]

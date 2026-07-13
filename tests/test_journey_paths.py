@@ -12,6 +12,8 @@ from rhumb.journeys.paths import (
     serialize_end_routes,
 )
 from rhumb.journeys.types import (
+    Confidence,
+    JourneyGap,
     JourneyGraph,
     JourneyPath,
     NavEdge,
@@ -121,11 +123,34 @@ def test_end_route_map_and_serialize_single_vs_multi() -> None:
         routes=base.routes,
         edges=base.edges,
         journeys=build_journeys(base, start="/search"),
+        gaps=(
+            JourneyGap(
+                message="nav target not in route tree: /legacy",
+                source_file="src/layout/AppSidebar.tsx",
+                source_line=48,
+                confidence=Confidence.MEDIUM,
+            ),
+        ),
     )
     single = end_route_map(graph)
     assert "/checkout" in single
     assert ["/search", "/cart", "/checkout"] in single["/checkout"]
-    assert serialize_end_routes([graph]) == single
+
+    payload = serialize_end_routes([graph])
+    assert list(payload.keys()) == ["projects"]
+    assert len(payload["projects"]) == 1
+    project = payload["projects"][0]
+    assert project["framework"] == "react-router"
+    assert project["root"] == "shop"
+    assert project["ends"] == single
+    assert project["gaps"] == [
+        {
+            "message": "nav target not in route tree: /legacy",
+            "confidence": "medium",
+            "source_file": "src/layout/AppSidebar.tsx",
+            "source_line": 48,
+        }
+    ]
 
     other = JourneyGraph(
         framework="expo-router",
@@ -133,6 +158,7 @@ def test_end_route_map_and_serialize_single_vs_multi() -> None:
         journeys=(JourneyPath(steps=("/", "/settings")),),
     )
     multi = serialize_end_routes([graph, other])
-    assert "shop:react-router" in multi
-    assert "mobile:expo-router" in multi
-    assert multi["mobile:expo-router"]["/settings"] == [["/", "/settings"]]
+    assert len(multi["projects"]) == 2
+    assert multi["projects"][1]["framework"] == "expo-router"
+    assert multi["projects"][1]["ends"]["/settings"] == [["/", "/settings"]]
+    assert multi["projects"][1]["gaps"] == []

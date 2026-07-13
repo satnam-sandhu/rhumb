@@ -65,8 +65,13 @@ def test_extract_end_routes_json_shape(tmp_path: Path) -> None:
     _mini_tanstack(tmp_path)
     payload = extract_end_routes(tmp_path)
     assert isinstance(payload, dict)
-    # Single project → flat end → paths map
-    for end, paths in payload.items():
+    assert "projects" in payload
+    assert len(payload["projects"]) == 1
+    project = payload["projects"][0]
+    assert project["framework"] == "tanstack-router"
+    assert "ends" in project and "gaps" in project
+    assert isinstance(project["gaps"], list)
+    for end, paths in project["ends"].items():
         assert isinstance(end, str)
         assert end.startswith("/")
         assert isinstance(paths, list)

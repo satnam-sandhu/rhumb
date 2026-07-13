@@ -96,10 +96,10 @@ uv run python
 ## CLI
 
 ```bash
-# End-route JSON on stdout (pipe-friendly)
+# Journey JSON on stdout (pipe-friendly) — includes ends + gaps
 rhumb ./my-app --journey
 
-# Same JSON + end-grouped journeys / routes / edges on stderr
+# Same JSON + end-grouped journeys / routes / edges / gaps on stderr
 rhumb ./my-app --journey --verbose
 
 # Write to a file
@@ -109,13 +109,13 @@ rhumb ./my-app --journey > journeys.json
 rhumb ./my-app --instrument
 ```
 
-Stdout is only the JSON map when you use `--journey` without `--verbose` noise on stdout (verbose detail goes to stderr).
+Stdout is only the JSON envelope when you use `--journey` (verbose detail goes to stderr).
 
 ---
 
 ## Library (programmatic)
 
-### Preferred: end route → inbound paths
+### Preferred: ends + gaps envelope
 
 `extract_end_routes` returns a **JSON-serializable `dict`** (not a string). Same shape as the CLI.
 
@@ -123,15 +123,18 @@ Stdout is only the JSON map when you use `--journey` without `--verbose` noise o
 from rhumb import extract_end_routes
 import json
 
-ends = extract_end_routes("./my-app")
+result = extract_end_routes("./my-app")
 
-# use as a dict
-for end_route, paths in ends.items():
-    print(end_route, len(paths))
+for project in result["projects"]:
+    print(project["framework"], project["root"])
+    for end_route, paths in project["ends"].items():
+        print(end_route, len(paths))
+    for gap in project["gaps"]:
+        print("gap:", gap["message"])
 
 # need a JSON string / HTTP body / file?
-payload = json.dumps(ends, indent=2)
-json.dump(ends, open("journeys.json", "w"), indent=2)
+payload = json.dumps(result, indent=2)
+json.dump(result, open("journeys.json", "w"), indent=2)
 ```
 
 ### Reuse detection across calls
@@ -140,7 +143,7 @@ json.dump(ends, open("journeys.json", "w"), indent=2)
 from rhumb import analyze, extract_end_routes
 
 ctx = analyze("./my-app")   # detect frameworks once
-ends = extract_end_routes(ctx)
+result = extract_end_routes(ctx)
 ```
 
 ### Lower-level: full journey graphs
@@ -175,57 +178,68 @@ for detection in detect_all_frameworks(root):
 
 ## Output format
 
-### Single app
-
-Keys = **end screens / routes**. Values = **all inbound journey paths** that terminate there (each path is an ordered list of URL steps).
+Always one envelope (single app or monorepo):
 
 ```json
 {
-  "/checkout": [
-    ["/search", "/product-details", "/cart", "/checkout"],
-    ["/search", "/cart", "/checkout"]
-  ],
-  "/profile": [
-    ["/", "/profile"]
-  ],
-  "/about": [
-    ["/", "/about"]
+  "projects": [
+    {
+      "framework": "tanstack-router",
+      "root": "shop",
+      "ends": {
+        "/checkout": [
+          ["/search", "/product-details", "/cart", "/checkout"],
+          ["/search", "/cart", "/checkout"]
+        ],
+        "/profile": [
+          ["/", "/profile"]
+        ]
+      },
+      "gaps": [
+        {
+          "message": "nav target not in route tree: /legacy",
+          "source_file": "src/layout/AppSidebar.tsx",
+          "source_line": 48,
+          "confidence": "medium"
+        }
+      ]
+    }
   ]
 }
 ```
 
-Meaning: every listed path is a concrete funnel that ends on that screen. Shared for every framework — plugins only supply routes + nav edges; this map is built once.
+| Field | Meaning |
+|-------|---------|
+| `ends` | End screen → all inbound journey paths that terminate there |
+| `gaps` | What we could **not** resolve (same rows `-v` prints) |
 
-### Monorepo (multiple detected apps)
-
-```json
-{
-  "web:tanstack-router": {
-    "/about": [["/", "/about"]],
-    "/posts": [["/", "/posts"]]
-  },
-  "mobile:expo-router": {
-    "/settings": [["/", "/settings"]]
-  }
-}
-```
+Monorepo = multiple objects inside `projects`.
 
 ### CLI sample session
 
 ```bash
 $ rhumb ./shop --journey
 {
-  "/cart": [
-    ["/search", "/product-details", "/cart"]
-  ],
-  "/checkout": [
-    ["/search", "/product-details", "/cart", "/checkout"],
-    ["/search", "/cart", "/checkout"]
+  "projects": [
+    {
+      "framework": "react-router",
+      "root": "shop",
+      "ends": {
+        "/cart": [
+          ["/search", "/product-details", "/cart"]
+        ],
+        "/checkout": [
+          ["/search", "/product-details", "/cart", "/checkout"],
+          ["/search", "/cart", "/checkout"]
+        ]
+      },
+      "gaps": []
+    }
   ]
 }
 ```
 
-With `--verbose`, stderr mirrors that structure (human-readable):
+With `--verbose`, stderr mirrors ends (grouped by destination) and lists gaps:
 
 ```text
   journeys: 3 → 2 ends
@@ -234,7 +248,35 @@ With `--verbose`, stderr mirrors that structure (human-readable):
     /checkout:
       /search → /product-details → /cart → /checkout
       /search → /cart → /checkout
+  gaps: 1
+    - nav target not in route tree: /legacy  (src/layout/AppSidebar.tsx:48)
 ```
+
+---
+
+## What it cannot do (gaps & limits)
+
+Rhumb prefers a **flagged gap** over a silent wrong edge. Incomplete `ends` + non-empty `gaps` is expected — not a crash.
+
+**Not covered today (typical gap sources):**
+
+| Limit | Why |
+|-------|-----|
+| Runtime-only routes | Paths built only after fetch / feature flags / CMS |
+| Fully dynamic targets | `navigate(variable)`, `to={href}` with no static string |
+| Cross-package deep links | Nav in one package to a route owned by another (unless both scanned) |
+| Non-JS / coming-soon frameworks | Detected sometimes; extract may be stub or skipped |
+| Auth / permission branches | Who *may* open a screen is not modeled — only static graph edges |
+| Full TypeScript project typecheck | Miss-path binder is opt-in; default is tree-sitter syntax only |
+| Pixel / UX “screens” | We map **URL routes**, not visual screen names or analytics events |
+
+**Also not claimed:**
+
+- 100% of sidebar / marketing links will resolve
+- Parity with the running app after every deploy (re-run extract after route changes)
+- Replacement for E2E tests — this is static structure, not behavior
+
+Read `gaps[].message` + `source_file` to see what to fix or ignore. Empty `gaps` means extract had nothing to flag — not that the product has no dark corners.
 
 ---
 
@@ -257,7 +299,7 @@ from rhumb import JourneyGraph, RouteNode, NavEdge, Confidence
 1. Detect frontend framework(s) from `package.json`
 2. Extract routes (config AST, filesystem, or generated route tree)
 3. Scan navigation (`Link`, `navigate`, `redirect`, …) via tree-sitter (+ TypeScript binder on miss)
-4. Enumerate journey paths and group by **end route** → JSON map
+4. Enumerate journey paths, group by **end route**, attach **gaps** → JSON envelope
 
 See `docs/journey-architecture.md` for the plugin model.
 
