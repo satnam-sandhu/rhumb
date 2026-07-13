@@ -16,33 +16,6 @@ wheels = [
 ]
 
 [[package]]
-name = "deterministic-kit"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "graphifyy" },
-    { name = "tree-sitter" },
-    { name = "tree-sitter-javascript" },
-    { name = "tree-sitter-typescript" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "graphifyy", specifier = ">=0.9.11" },
-    { name = "tree-sitter", specifier = ">=0.23.0" },
-    { name = "tree-sitter-javascript", specifier = ">=0.23.0" },
-    { name = "tree-sitter-typescript", specifier = ">=0.23.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.0" }]
-
-[[package]]
 name = "graphifyy"
 version = "0.9.11"
 source = { registry = "https://pypi.org/simple" }
@@ -780,3 +753,30 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/ab/5c/f5fb2ce355bbd381e647b04e8b2078a4043e663b6df6145d87550d3c3fe5/tree_sitter_zig-1.1.2-cp39-abi3-win_amd64.whl", hash = "sha256:7b94f00a0e69231ac4ebf0aa763734b9b5637e0ff13634ebfe6d13fadece71e9", size = 65105, upload-time = "2024-12-22T01:27:37.21Z" },
     { url = "https://files.pythonhosted.org/packages/34/8d/c0a481cc7bba9d39c533dd3098463854b5d3c4e6134496d9d83cd1331e51/tree_sitter_zig-1.1.2-cp39-abi3-win_arm64.whl", hash = "sha256:88152ebeaeca1431a6fc943a8b391fee6f6a8058f17435015135157735061ddf", size = 63219, upload-time = "2024-12-22T01:27:38.348Z" },
 ]
+
+[[package]]
+name = "tributary"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "graphifyy" },
+    { name = "tree-sitter" },
+    { name = "tree-sitter-javascript" },
+    { name = "tree-sitter-typescript" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "graphifyy", specifier = ">=0.9.11" },
+    { name = "tree-sitter", specifier = ">=0.23.0" },
+    { name = "tree-sitter-javascript", specifier = ">=0.23.0" },
+    { name = "tree-sitter-typescript", specifier = ">=0.23.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=8.0" }]

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from deterministic_kit.journeys.base import JourneyExtractor
-from deterministic_kit.journeys.expo_router import ExpoRouterExtractor
-from deterministic_kit.journeys.react_router import ReactRouterExtractor
-from deterministic_kit.journeys.sveltekit import SvelteKitExtractor
-from deterministic_kit.journeys.tanstack_router import TanStackRouterExtractor
-from deterministic_kit.journeys.vue_router import VueRouterExtractor
+from tributary.journeys.base import JourneyExtractor
+from tributary.journeys.expo_router import ExpoRouterExtractor
+from tributary.journeys.react_router import ReactRouterExtractor
+from tributary.journeys.sveltekit import SvelteKitExtractor
+from tributary.journeys.tanstack_router import TanStackRouterExtractor
+from tributary.journeys.vue_router import VueRouterExtractor
 
 # Framework id from FrameworkDetection.framework → plugin.
 # Unlisted frameworks → run_journey reports "not implemented".

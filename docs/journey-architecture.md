@@ -26,7 +26,7 @@ Every framework plugin returns the same shape: `JourneyGraph` (routes, edges, ga
 ## Module layout
 
 ```
-src/deterministic_kit/
+src/tributary/
   journey.py                 # CLI mode: registry dispatch + print
   journeys/
     types.py                 # JourneyGraph, RouteNode, NavEdge, JourneyGap, Confidence

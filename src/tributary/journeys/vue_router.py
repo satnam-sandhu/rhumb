@@ -10,9 +10,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from deterministic_kit.framework import FrameworkDetection
-from deterministic_kit.graphify_runner import AstResult
-from deterministic_kit.journeys.types import Confidence, JourneyGap, JourneyGraph
+from tributary.framework import FrameworkDetection
+from tributary.graphify_runner import AstResult
+from tributary.journeys.types import Confidence, JourneyGap, JourneyGraph
 
 
 class VueRouterExtractor:

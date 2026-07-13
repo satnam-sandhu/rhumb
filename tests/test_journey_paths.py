@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from deterministic_kit.journeys.paths import build_journeys, format_journey
-from deterministic_kit.journeys.types import (
+from tributary.journeys.paths import build_journeys, format_journey
+from tributary.journeys.types import (
     Confidence,
     JourneyGraph,
     NavEdge,

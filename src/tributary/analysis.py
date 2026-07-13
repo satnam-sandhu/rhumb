@@ -5,8 +5,8 @@ from pathlib import Path
 
 from graphify.detect import detect
 
-from deterministic_kit.framework import FrameworkDetection, detect_all_frameworks, format_projects
-from deterministic_kit.graphify_runner import AstResult, format_ast_results, run_ast_for_projects
+from tributary.framework import FrameworkDetection, detect_all_frameworks, format_projects
+from tributary.graphify_runner import AstResult, format_ast_results, run_ast_for_projects
 
 
 @dataclass(frozen=True)
@@ -49,6 +49,14 @@ def format_summary(result: dict) -> str:
         lines.append(f"  skipped: {len(skipped)} sensitive files")
 
     return "\n".join(lines)
+
+
+def analyze(path: str | Path) -> AnalysisContext:
+    """Detect frameworks and build AST context for a project (programmatic API).
+
+    Same as :func:`run_prerequisites` — preferred name for library use.
+    """
+    return run_prerequisites(Path(path))
 
 
 def run_prerequisites(project_path: Path) -> AnalysisContext:

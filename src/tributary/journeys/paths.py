@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections import defaultdict
 from pathlib import Path
 
-from deterministic_kit.journeys.types import JourneyGraph, JourneyPath, NavEdge, RouteNode
+from tributary.journeys.types import JourneyGraph, JourneyPath, NavEdge, RouteNode
 
 
 def build_journeys(

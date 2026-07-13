@@ -123,7 +123,7 @@ Shared `build_journeys()` (already in shell) turns edges into `/a → /b → …
 ## Module layout
 
 ```
-src/deterministic_kit/journeys/
+src/tributary/journeys/
   expo_router.py           # ExpoRouterExtractor (live)
   registry.py              # "expo-router" → ExpoRouterExtractor()
   parse_js.py              # nav only (shared)

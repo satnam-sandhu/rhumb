@@ -16,9 +16,9 @@ import re
 from pathlib import Path
 from typing import Any
 
-from deterministic_kit.framework import FrameworkDetection
-from deterministic_kit.graphify_runner import AstResult
-from deterministic_kit.journeys.parse_js import (
+from tributary.framework import FrameworkDetection
+from tributary.graphify_runner import AstResult
+from tributary.journeys.parse_js import (
     JsParseResult,
     extract_imports,
     find_exported_initializer,
@@ -27,11 +27,11 @@ from deterministic_kit.journeys.parse_js import (
     parse_js_ts,
     string_literal_value,
 )
-from deterministic_kit.journeys.react_router import (
+from tributary.journeys.react_router import (
     build_file_route_index,
     from_path_for_file,
 )
-from deterministic_kit.journeys.types import (
+from tributary.journeys.types import (
     Confidence,
     JourneyGap,
     JourneyGraph,

@@ -4,9 +4,9 @@ import argparse
 import sys
 from pathlib import Path
 
-from deterministic_kit.analysis import print_prerequisites, run_prerequisites
-from deterministic_kit.instrument import run_instrument
-from deterministic_kit.journey import run_journey
+from tributary.analysis import print_prerequisites, run_prerequisites
+from tributary.instrument import run_instrument
+from tributary.journey import run_journey
 
 
 def validate_project_path(path: Path) -> Path:
@@ -23,8 +23,8 @@ def validate_project_path(path: Path) -> Path:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Deterministic analysis for frontend projects: "
-            "user journeys and PostHog instrumentation."
+            "Tributary — map user journeys and PostHog instrumentation "
+            "from frontend source (static, no runtime)."
         ),
     )
     parser.add_argument(

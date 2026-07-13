@@ -5,10 +5,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from deterministic_kit.framework import FrameworkDetection
-from deterministic_kit.journeys.parse_js import parse_js_ts
-from deterministic_kit.journeys.paths import build_journeys
-from deterministic_kit.journeys.tanstack_router import (
+from tributary.framework import FrameworkDetection
+from tributary.journeys.parse_js import parse_js_ts
+from tributary.journeys.paths import build_journeys
+from tributary.journeys.tanstack_router import (
     TanStackRouterExtractor,
     extract_filesystem_routes,
     extract_nav_from_parse,

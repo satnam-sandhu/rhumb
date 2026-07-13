@@ -3,9 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
-from deterministic_kit.framework import FrameworkDetection
-from deterministic_kit.graphify_runner import AstResult
-from deterministic_kit.journeys.types import JourneyGraph
+from tributary.framework import FrameworkDetection
+from tributary.graphify_runner import AstResult
+from tributary.journeys.types import JourneyGraph
 
 
 @runtime_checkable

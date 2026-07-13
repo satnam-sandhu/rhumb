@@ -137,7 +137,7 @@ Search params (`search:`) — ignore for journey path identity (URL path only), 
 ## Module layout
 
 ```
-src/deterministic_kit/journeys/
+src/tributary/journeys/
   tanstack_router.py       # TanStackRouterExtractor (live)
   registry.py              # "tanstack-router" → TanStackRouterExtractor()
   parse_js.py              # shared

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from deterministic_kit.framework import FrameworkDetection
-from deterministic_kit.journeys.expo_router import (
+from tributary.framework import FrameworkDetection
+from tributary.journeys.expo_router import (
     ExpoRouterExtractor,
     collect_layouts,
     cross_check_typed_routes,
@@ -16,8 +16,8 @@ from deterministic_kit.journeys.expo_router import (
     parse_typed_routes,
     resolve_relative_href,
 )
-from deterministic_kit.journeys.parse_js import parse_js_ts
-from deterministic_kit.journeys.paths import build_journeys
+from tributary.journeys.parse_js import parse_js_ts
+from tributary.journeys.paths import build_journeys
 
 
 def _touch(path: Path, body: str = "export default function Page() { return null }\n") -> None:
@@ -140,7 +140,7 @@ def test_nested_groups_and_layout_chain(tmp_path: Path) -> None:
 
 
 def test_canonicalize_expo_href() -> None:
-    from deterministic_kit.journeys.expo_router import canonicalize_expo_href
+    from tributary.journeys.expo_router import canonicalize_expo_href
 
     assert canonicalize_expo_href("/(auth)/sign-in") == "/sign-in"
     assert canonicalize_expo_href("/(tabs)") == "/"
@@ -151,7 +151,7 @@ def test_canonicalize_expo_href() -> None:
 
 
 def test_soften_template_href() -> None:
-    from deterministic_kit.journeys.expo_router import soften_template_href
+    from tributary.journeys.expo_router import soften_template_href
 
     known = {"/group/[id]", "/expense/[id]", "/expense/group/[id]", "/add-expense", "/"}
     assert soften_template_href("/group/${group.id}", known) == "/group/[id]"

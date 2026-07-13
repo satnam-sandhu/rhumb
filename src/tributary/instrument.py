@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from deterministic_kit.analysis import AnalysisContext
+from tributary.analysis import AnalysisContext
 
 
 def run_instrument(context: AnalysisContext) -> None:

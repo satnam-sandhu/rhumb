@@ -1,8 +1,37 @@
 [project]
-name = "deterministic-kit"
+name = "tributary"
 version = "0.1.0"
-description = "Deterministic user journey mapping and PostHog instrumentation detection"
+description = "Tributary: static user journey mapping and PostHog instrumentation detection"
+readme = "README.md"
 requires-python = ">=3.11"
+license = "MIT"
+authors = [
+    { name = "Satnam Singh" },
+]
+keywords = [
+    "journeys",
+    "routing",
+    "react-router",
+    "tanstack-router",
+    "expo-router",
+    "nextjs",
+    "static-analysis",
+    "posthog",
+    "frontend",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Quality Assurance",
+    "Typing :: Typed",
+]
 dependencies = [
     "graphifyy>=0.9.11",
     "tree-sitter>=0.23.0",
@@ -10,14 +39,24 @@ dependencies = [
     "tree-sitter-typescript>=0.23.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/satnam-sandhu/tributary"
+Documentation = "https://github.com/satnam-sandhu/tributary#readme"
+Repository = "https://github.com/satnam-sandhu/tributary"
+Issues = "https://github.com/satnam-sandhu/tributary/issues"
+
+[project.scripts]
+tributary = "tributary.cli:main"
+
 [dependency-groups]
 dev = [
     "pytest>=8.0",
 ]
 
-[project.scripts]
-deterministic-kit = "deterministic_kit.cli:main"
-
 [build-system]
 requires = ["uv_build>=0.10.9,<0.11.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "tributary"
+module-root = "src"

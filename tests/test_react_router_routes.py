@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from deterministic_kit.framework import FrameworkDetection
-from deterministic_kit.journeys.parse_js import extract_imports, parse_js_ts
-from deterministic_kit.journeys.react_router import (
+from tributary.framework import FrameworkDetection
+from tributary.journeys.parse_js import extract_imports, parse_js_ts
+from tributary.journeys.react_router import (
     ReactRouterExtractor,
     extract_nav_from_parse,
     extract_routes_from_parse,
