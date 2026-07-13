@@ -10,7 +10,7 @@ from rhumb.analysis import AnalysisContext, run_prerequisites
 from rhumb.framework import resolve_project_dir
 from rhumb.journeys.paths import (
     build_journeys,
-    format_journey,
+    end_route_map,
     serialize_end_routes,
 )
 from rhumb.journeys.registry import get_extractor
@@ -134,10 +134,14 @@ def _print_graph_verbose(label: str, graph: JourneyGraph) -> None:
         meta = ", ".join(f"{k}={v}" for k, v in graph.meta.items())
         print(f"  meta: {meta}", file=sys.stderr)
 
-    if graph.journeys:
-        print(f"  journeys: {len(graph.journeys)}", file=sys.stderr)
-        for journey in graph.journeys:
-            print(f"    {format_journey(journey)}", file=sys.stderr)
+    by_end = end_route_map(graph)
+    if by_end:
+        path_count = sum(len(paths) for paths in by_end.values())
+        print(f"  journeys: {path_count} → {len(by_end)} ends", file=sys.stderr)
+        for end, paths in by_end.items():
+            print(f"    {end}:", file=sys.stderr)
+            for steps in paths:
+                print(f"      {' → '.join(steps)}", file=sys.stderr)
     else:
         print("  journeys: 0", file=sys.stderr)
 

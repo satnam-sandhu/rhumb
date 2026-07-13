@@ -44,7 +44,7 @@ One install → **CLI** and **Python import**.
 # End-route JSON on stdout (pipe-friendly)
 rhumb ./my-app --journey
 
-# Same JSON + detection / route / edge detail on stderr
+# Same JSON + end-grouped journeys / routes / edges on stderr
 rhumb ./my-app --journey --verbose
 
 # Write to a file
@@ -168,6 +168,17 @@ $ rhumb ./shop --journey
     ["/search", "/cart", "/checkout"]
   ]
 }
+```
+
+With `--verbose`, stderr mirrors that structure (human-readable):
+
+```text
+  journeys: 3 → 2 ends
+    /cart:
+      /search → /product-details → /cart
+    /checkout:
+      /search → /product-details → /cart → /checkout
+      /search → /cart → /checkout
 ```
 
 ---
