@@ -4,6 +4,14 @@
 
 Static **user journey** graphs from frontend source — routes, navigation edges, and concrete paths. No runtime. No LLM in the extract path.
 
+### Live sample
+
+Ran on the public [TanStack Router kitchen-sink](https://github.com/TanStack/router/tree/main/examples/react/kitchen-sink-file-based) example:
+
+![rhumb CLI on TanStack kitchen-sink](examples/tanstack-kitchen-sink/demo.gif)
+
+Checked-in output: [`examples/tanstack-kitchen-sink/journeys.json`](examples/tanstack-kitchen-sink/journeys.json) (`ends` + real `gaps` from dynamic nav). How to reproduce: [examples/tanstack-kitchen-sink/README.md](examples/tanstack-kitchen-sink/README.md).
+
 ## Framework support
 
 | Framework | Status | Notes |

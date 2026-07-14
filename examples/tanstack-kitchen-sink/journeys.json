@@ -1,0 +1,64 @@
+{
+    "projects": [
+        {
+            "framework": "tanstack-router",
+            "root": "kitchen-sink-file-based",
+            "ends": {
+                "/dashboard/invoices/$invoiceId": [
+                    [
+                        "/",
+                        "/dashboard/invoices/$invoiceId"
+                    ]
+                ],
+                "/dashboard/users/user": [
+                    [
+                        "/",
+                        "/dashboard/users/user"
+                    ]
+                ],
+                "/login": [
+                    [
+                        "/",
+                        "/login"
+                    ]
+                ]
+            },
+            "gaps": [
+                {
+                    "message": "FS route missing from routeTree.gen.ts: /(this-folder-is-not-in-the-url)/route-group",
+                    "confidence": "medium",
+                    "source_file": "src/routes/(this-folder-is-not-in-the-url)/route-group.tsx"
+                },
+                {
+                    "message": "gen route not found on filesystem: /route-group",
+                    "confidence": "low",
+                    "source_file": "src/routeTree.gen.ts"
+                },
+                {
+                    "message": "dynamic Link to unresolved",
+                    "confidence": "low",
+                    "source_file": "src/routes/__root.tsx",
+                    "source_line": 52
+                },
+                {
+                    "message": "dynamic navigate target unresolved",
+                    "confidence": "low",
+                    "source_file": "src/routes/dashboard.invoices.$invoiceId.tsx",
+                    "source_line": 39
+                },
+                {
+                    "message": "dynamic navigate target unresolved",
+                    "confidence": "low",
+                    "source_file": "src/routes/dashboard.users.route.tsx",
+                    "source_line": 55
+                },
+                {
+                    "message": "dynamic navigate target unresolved",
+                    "confidence": "low",
+                    "source_file": "src/routes/dashboard.users.route.tsx",
+                    "source_line": 69
+                }
+            ]
+        }
+    ]
+}
