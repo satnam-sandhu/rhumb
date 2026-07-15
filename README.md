@@ -33,7 +33,7 @@ Detection already recognizes several of the “coming soon” stacks from `packa
 | Tool | Version | Why |
 |------|---------|-----|
 | [Python](https://www.python.org/downloads/) | **3.11+** | Runtime (`requires-python = ">=3.11"`) |
-| [Git](https://git-scm.com/) | any recent | Clone / install from GitHub |
+| [Git](https://git-scm.com/) | any recent | Clone for local development |
 | [uv](https://docs.astral.sh/uv/) | latest | Recommended — sync deps + run CLI without a global `pip install` |
 
 Optional: Node.js only if you later use the TypeScript binder miss-path against a project that needs it; the default tree-sitter path does not require Node.
@@ -46,16 +46,10 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ## Install
 
-Not on PyPI yet. Use the GitHub repo.
-
-### A — Install from repo URL (into your env / project)
-
 ```bash
-# with uv (preferred)
-uv pip install git+https://github.com/satnam-sandhu/rhumb.git
-
-# or with pip
-pip install git+https://github.com/satnam-sandhu/rhumb.git
+pip install rhumb
+# or
+uv add rhumb
 ```
 
 Then:
@@ -69,34 +63,22 @@ from rhumb import extract_end_routes
 print(extract_end_routes("./my-app"))
 ```
 
-### B — Clone and run locally (no PyPI, no global package install)
+Pre-release / from git:
+
+```bash
+uv pip install git+https://github.com/satnam-sandhu/rhumb.git
+# or
+pip install git+https://github.com/satnam-sandhu/rhumb.git
+```
+
+### Develop from clone
 
 ```bash
 git clone https://github.com/satnam-sandhu/rhumb.git
 cd rhumb
 uv sync --group dev          # creates .venv + installs deps
-```
-
-Run CLI / tests via `uv run` (uses the project venv; you do not need `pip install -e .`):
-
-```bash
 uv run rhumb ./path/to/my-app --journey
-uv run rhumb ./path/to/my-app --journey -v
 uv run pytest -q
-```
-
-Library import from this checkout:
-
-```bash
-uv run python -c 'from rhumb import extract_end_routes; print(extract_end_routes("./path/to/my-app"))'
-```
-
-Or open a shell in the synced env:
-
-```bash
-uv run python
->>> from rhumb import extract_end_routes
->>> extract_end_routes("./path/to/my-app")
 ```
 
 ---
